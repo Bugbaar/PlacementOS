@@ -103,12 +103,16 @@ const validateOpportunityPayload = (payload) => {
   }
   if (!isNonEmptyArray(payload.locations)) {
     errors.push('locations is required and must be a non-empty array')
+  } else if (!payload.locations.every(isNonEmptyString)) {
+    errors.push('locations must be an array of non-empty strings')
   }
   if (!WORK_MODES.includes(payload.workMode)) {
     errors.push('workMode must be one of: Remote, Hybrid, On-site')
   }
   if (!isNonEmptyArray(payload.requiredSkills)) {
     errors.push('requiredSkills is required and must be a non-empty array')
+  } else if (!payload.requiredSkills.every(isNonEmptyString)) {
+    errors.push('requiredSkills must be an array of non-empty strings')
   }
   if (!isValidDate(payload.deadline)) {
     errors.push('deadline is required and must be a valid date string')
@@ -130,9 +134,21 @@ const validateOpportunityPayload = (payload) => {
   }
   if (payload.allowedBranches !== undefined && !Array.isArray(payload.allowedBranches)) {
     errors.push('allowedBranches must be an array')
+  } else if (
+    payload.allowedBranches !== undefined &&
+    !payload.allowedBranches.every(isNonEmptyString)
+  ) {
+    errors.push('allowedBranches must be an array of non-empty strings')
   }
   if (payload.graduationYears !== undefined && !Array.isArray(payload.graduationYears)) {
     errors.push('graduationYears must be an array')
+  } else if (
+    payload.graduationYears !== undefined &&
+    !payload.graduationYears.every(
+      (year) => Number.isInteger(Number(year)) && Number(year) >= 0,
+    )
+  ) {
+    errors.push('graduationYears must be an array of non-negative integers')
   }
 
   return errors

@@ -12,6 +12,11 @@ const opportunityErrorResponse = (result) => ({
   message: result.message,
 })
 
+const attachOpportunity = (match) => ({
+  ...match,
+  opportunity: opportunityService.getOpportunityById(match.opportunityId).data,
+})
+
 export const getStudentMatches = (req, res) => {
   const { studentId } = req.params
   const studentResult = studentService.getStudentById(studentId)
@@ -24,7 +29,7 @@ export const getStudentMatches = (req, res) => {
     return
   }
 
-  const data = matchingService.getStudentMatches(studentResult.data)
+  const data = matchingService.getStudentMatches(studentResult.data).map(attachOpportunity)
 
   res.status(200).json({
     success: true,
@@ -55,10 +60,13 @@ export const getStudentOpportunityMatch = (req, res) => {
     return
   }
 
-  const data = matchingService.matchStudentToOpportunity(
-    studentResult.data,
-    opportunityResult.data,
-  )
+  const data = {
+    ...matchingService.matchStudentToOpportunity(
+      studentResult.data,
+      opportunityResult.data,
+    ),
+    opportunity: opportunityResult.data,
+  }
 
   res.status(200).json({
     success: true,

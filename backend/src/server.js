@@ -18,6 +18,38 @@ app.use('/api', notificationRoutes)
 app.use('/api/students', matchRoutes)
 app.use('/api/students', studentRoutes)
 
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    error: {
+      code: 'NOT_FOUND',
+      message: `Route ${req.method} ${req.originalUrl} not found`,
+    },
+  })
+})
+
+app.use((error, req, res, next) => {
+  if (error.type === 'entity.parse.failed') {
+    res.status(400).json({
+      success: false,
+      error: {
+        code: 'INVALID_JSON',
+        message: 'Request body is not valid JSON',
+      },
+    })
+    return
+  }
+
+  console.error(error)
+  res.status(error.status || 500).json({
+    success: false,
+    error: {
+      code: 'INTERNAL_ERROR',
+      message: 'Something went wrong on the server',
+    },
+  })
+})
+
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, () => {
