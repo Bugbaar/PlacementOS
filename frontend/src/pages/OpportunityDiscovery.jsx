@@ -8,13 +8,20 @@ import {
   getUniqueLocations,
 } from '../utils/opportunityUtils'
 
-function EmptyState() {
+function EmptyState({ onClear }) {
   return (
     <div className="rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
       <p className="text-base font-medium text-gray-900">No opportunities found</p>
       <p className="mt-1 text-sm text-gray-500">
         Try adjusting your search or clearing some filters.
       </p>
+      <button
+        type="button"
+        onClick={onClear}
+        className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+      >
+        Clear filters
+      </button>
     </div>
   )
 }
@@ -26,6 +33,16 @@ function OpportunityDiscovery() {
   const [workMode, setWorkMode] = useState('All')
 
   const locations = useMemo(() => getUniqueLocations(opportunities), [])
+
+  const hasActiveFilters =
+    query.trim() !== '' || type !== 'All' || location !== 'All' || workMode !== 'All'
+
+  const clearFilters = () => {
+    setQuery('')
+    setType('All')
+    setLocation('All')
+    setWorkMode('All')
+  }
 
   const results = useMemo(
     () =>
@@ -63,16 +80,25 @@ function OpportunityDiscovery() {
           onWorkModeChange={setWorkMode}
         />
 
-        <div className="mt-6 mb-4">
+        <div className="mt-6 mb-4 flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm text-gray-600">
             Showing{' '}
             <span className="font-semibold text-gray-900">{results.length}</span>{' '}
             of {opportunities.length} opportunities
           </p>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="text-sm font-medium text-blue-600 hover:text-blue-700"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
 
         {results.length === 0 ? (
-          <EmptyState />
+          <EmptyState onClear={clearFilters} />
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             {results.map((opportunity) => (
