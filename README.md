@@ -8,6 +8,14 @@ Our mission is to make placements transparent, data-driven, AI-powered, and acce
 
 ---
 
+## 💡 Current Implementation
+
+The first implemented vertical slice is **Smart Opportunity Discovery** — a full-stack matching and notification system that ranks opportunities for a student's profile and notifies them when a relevant, eligible role appears.
+
+Read the implementation guide: **[docs/smart-opportunity-discovery.md](docs/smart-opportunity-discovery.md)** (architecture, matching logic, API overview, setup, and tests).
+
+---
+
 # 🤔 Why PlacementOS?
 
 Campus placements are still managed through spreadsheets, emails, WhatsApp groups, and disconnected portals.
