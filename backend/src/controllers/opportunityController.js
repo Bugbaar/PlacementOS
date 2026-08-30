@@ -1,4 +1,5 @@
 import * as opportunityService from '../services/opportunityService.js'
+import * as notificationService from '../services/notificationService.js'
 
 export const getOpportunities = (req, res) => {
   const opportunities = opportunityService.getAllOpportunities()
@@ -45,6 +46,16 @@ export const createOpportunity = (req, res) => {
     })
     return
   }
+
+  const sendNotifications = () => {
+    try {
+      notificationService.createNotificationsForOpportunity(result.data)
+    } catch (error) {
+      console.error('Failed to generate notifications:', error)
+    }
+  }
+
+  setImmediate(sendNotifications)
 
   res.status(201).json({
     success: true,
