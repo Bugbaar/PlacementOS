@@ -3,6 +3,7 @@ import cors from 'cors'
 
 import healthRoutes from './routes/healthRoutes.js'
 import studentRoutes from './routes/studentRoutes.js'
+import opportunityRoutes from './routes/opportunityRoutes.js'
 
 const app = express()
 
@@ -11,6 +12,7 @@ app.use(express.json())
 
 app.use('/api/health', healthRoutes)
 app.use('/api/students', studentRoutes)
+app.use('/api/opportunities', opportunityRoutes)
 
 const PORT = process.env.PORT || 5000
 
