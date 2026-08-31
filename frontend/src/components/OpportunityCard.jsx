@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import Badge from './Badge'
-import { getDaysUntil } from '../utils/opportunityUtils'
 
 function MetaItem({ icon, children }) {
   return (
@@ -23,18 +22,6 @@ function formatScore(score) {
   return Number.isInteger(score) ? String(score) : score.toFixed(1)
 }
 
-function DeadlineText({ deadline }) {
-  const daysLeft = getDaysUntil(deadline)
-
-  if (daysLeft < 0) {
-    return <span className="text-gray-500">Closed</span>
-  }
-  if (daysLeft === 0) {
-    return <span className="font-medium text-red-600">Closes today</span>
-  }
-  return <span className="text-gray-500">{daysLeft} days left</span>
-}
-
 function CheckIcon({ passed }) {
   return (
     <svg
@@ -51,40 +38,6 @@ function CheckIcon({ passed }) {
         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
       )}
     </svg>
-  )
-}
-
-function MatchBreakdown({ match, opportunity }) {
-  const { matchingDetails } = match
-  const skills = matchingDetails?.skills ?? {}
-  const matchedCount = skills.matched?.length ?? 0
-  const requiredCount = opportunity.requiredSkills?.length ?? 0
-
-  const dimensions = [
-    { label: 'Role / domain preference', matched: matchingDetails?.roleDomain?.matched },
-    { label: 'Preferred location', matched: matchingDetails?.location?.matched },
-    { label: 'Opportunity type', matched: matchingDetails?.opportunityType?.matched },
-  ]
-
-  return (
-    <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
-      <p className="text-sm font-semibold text-gray-900">Why this match</p>
-      <p className="mt-1 text-xs text-gray-600">
-        {matchedCount} of {requiredCount} required skills matched
-        {skills.percentage !== undefined ? ` (${skills.percentage}% skill coverage)` : ''}.
-      </p>
-      <ul className="mt-3 space-y-2">
-        {dimensions.map((dimension) => (
-          <li key={dimension.label} className="flex items-center justify-between gap-3">
-            <span className="text-sm text-gray-700">{dimension.label}</span>
-            <span className="flex items-center gap-1.5 text-sm font-medium text-gray-900">
-              {dimension.matched ? 'Matched' : 'Not matched'}
-              <CheckIcon passed={dimension.matched} />
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
   )
 }
 

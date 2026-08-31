@@ -26,9 +26,3 @@ export function filterOpportunities(
 export function getUniqueLocations(opportunities) {
   return [...new Set(opportunities.flatMap((opportunity) => opportunity.locations ?? []))]
 }
-
-export function getDaysUntil(deadline) {
-  const now = new Date()
-  const target = new Date(deadline)
-  return Math.ceil((target.getTime() - now.getTime()) / 86_400_000)
-}
