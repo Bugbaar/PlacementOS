@@ -56,3 +56,25 @@ export const getApplicationsForOpportunity = (req, res) => {
     data: result.data,
   })
 }
+
+export const getApplicationsForStudent = (req, res) => {
+  const { id: studentId } = req.params
+  const result = applicationService.getApplicationsForStudent(studentId)
+
+  if (!result.ok) {
+    res.status(result.status).json({
+      success: false,
+      error: {
+        code: result.status === 404 ? 'STUDENT_NOT_FOUND' : 'INVALID_STUDENT_ID',
+        message: result.message,
+      },
+    })
+    return
+  }
+
+  res.status(200).json({
+    success: true,
+    count: result.data.length,
+    data: result.data,
+  })
+}
