@@ -8,11 +8,88 @@ Our mission is to make placements transparent, data-driven, AI-powered, and acce
 
 ---
 
-## 💡 Current Implementation
+# 🚀 Current Implementation
 
-The first implemented vertical slice is **Smart Opportunity Discovery** — a full-stack matching and notification system that ranks opportunities for a student's profile and notifies them when a relevant, eligible role appears.
+This contribution implements a **complete opportunity lifecycle** connecting **Students** and **Recruiters** — from posting an opportunity to tracking applications and analytics.
 
-Read the implementation guide: **[docs/smart-opportunity-discovery.md](docs/smart-opportunity-discovery.md)** (architecture, matching logic, API overview, setup, and tests).
+```
+🏢 Recruiter posts an opportunity
+        ↓
+🧠 Matching Engine evaluates student profiles
+        ↓
+📊 Relevance and eligibility are calculated
+        ↓
+🔔 Qualified students receive notifications
+        ↓
+🎓 Students browse and discover all opportunities
+        ↓
+✨ Matching opportunities show personalized match insights
+        ↓
+📝 Eligible matching students can apply
+        ↓
+📈 Recruiters can monitor opportunities and analytics
+```
+
+Read the full implementation guide: **[docs/smart-opportunity-discovery.md](docs/smart-opportunity-discovery.md)** (architecture, matching logic, API overview, setup, and tests).
+
+---
+
+# ✨ Implemented Features
+
+## 🎓 Student Experience
+
+- Student profile management (edit skills, academic info, and preferences)
+- Skills management
+- Career / domain preferences
+- Location preferences
+- Opportunity type preferences
+- Browse all posted opportunities
+- Search opportunities
+- Contextual / progressive filters (type, location, work mode)
+- Personalized opportunity matching
+- Match scores (0–100)
+- Relevance indicators
+- Eligibility checking
+- Match explanations ("why this matches you")
+- Matched and missing skills
+- Notifications for qualified opportunities (read / unread management)
+- Apply to eligible matching opportunities
+- Backend-enforced application rules
+- Duplicate application prevention
+
+## 🏢 Recruiter Experience
+
+- Role-based recruiter experience (distinct dashboard from the student view)
+- Post opportunities
+- Define opportunity requirements (role, domain, description, type, work mode)
+- Define required skills
+- Define locations
+- Define eligibility criteria (CGPA, branches, graduation years, max backlogs)
+- View posted opportunities (active / expired / closed)
+- Opportunity analytics
+- **Students evaluated** — every student the engine scored
+- **Relevant matches** — students above the relevance threshold
+- **Eligible students** — students who pass all eligibility checks
+- **Students notified** — students who received an automated notification
+- **Real applications received** — actual applications submitted by students
+- Opportunity close flow (stop new applications, mark a posting closed)
+
+## 🧠 Matching Engine
+
+The core of the platform. It:
+
+- Evaluates every student profile against every opportunity
+- Calculates relevance / match scores (0–100)
+- Checks eligibility separately
+- Uses student skills and preferences
+- Considers role / domain preferences
+- Considers location preferences
+- Considers opportunity type
+- Checks CGPA, branch, graduation year, and active backlogs
+- Drives notifications (qualified students are notified automatically)
+- Controls whether a student can apply
+
+> **Relevance and eligibility are separate concepts.** A student can be highly relevant to a role yet ineligible for it (e.g. wrong branch or below the CGPA cut-off), and eligibility checks never inflate or deflate a match score. The UI and the application engine treat the two independently.
 
 ---
 
@@ -204,45 +281,42 @@ PlacementOS is built for:
 
 # 🏗 Technology Stack
 
-## Frontend
+## ✅ Currently Used
 
-- React.js
-- TypeScript
-- Tailwind CSS
-- Redux Toolkit
+The technologies actually present in this implementation branch (confirmed in the repo):
 
-## Backend
+**Frontend:**
+- React 19 (JavaScript)
+- Vite 8 (build tooling / dev server)
+- Tailwind CSS 4
 
-- Node.js
-- Express.js
+**Backend:**
+- Node.js (ES modules)
+- Express 5 (REST API)
 
-## Database
+**Testing & Linting:**
+- Node's built-in test runner (`node --test`) for backend unit tests
+- `oxlint` for frontend static checks
 
-- MongoDB
-- Mongoose
+**APIs**
+- REST APIs (`fetch` from the frontend, Express routes on the backend)
 
-## Authentication
+> Data is currently held in **in-memory seed data** — there is no database yet. All state resets on a backend restart by design.
 
-- JWT
-- OAuth 2.0
+---
 
-## Storage
+## 🧭 Vision / Roadmap Technology
 
-- Cloudinary
+The platform's long-term architecture targets broader infrastructure, which has **not** yet been implemented in this branch:
 
-## Real-Time
+- **Frontend:** TypeScript, Redux Toolkit
+- **Database:** MongoDB, Mongoose
+- **Authentication:** JWT, OAuth 2.0
+- **Storage:** Cloudinary
+- **Real-Time:** Socket.IO
+- **Infrastructure:** Docker, GitHub Actions, Nginx
 
-- Socket.IO
-
-## Infrastructure
-
-- Docker
-- GitHub Actions
-- Nginx
-
-## APIs
-
-- REST APIs
+These represent the intended future architecture and are separate from what is implemented today.
 
 ---
 
