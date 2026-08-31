@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import OpportunityCard from '../components/OpportunityCard'
-import OpportunityFilters from '../components/OpportunityFilters'
+import {
+  ActiveFilterChips,
+  OpportunityFilters,
+  OpportunitySearch,
+} from '../components/OpportunityFilters'
 import NotificationBell from '../components/NotificationBell'
 import { fetchStudentMatches } from '../services/matchService'
 import { CURRENT_STUDENT_ID } from '../config'
@@ -40,6 +44,7 @@ function OpportunityDiscovery() {
   const [type, setType] = useState('All')
   const [location, setLocation] = useState('All')
   const [workMode, setWorkMode] = useState('All')
+  const [searchFocused, setSearchFocused] = useState(false)
 
   const loadMatches = useCallback(
     () => fetchStudentMatches(CURRENT_STUDENT_ID),
@@ -79,11 +84,28 @@ function OpportunityDiscovery() {
   const hasActiveFilters =
     query.trim() !== '' || type !== 'All' || location !== 'All' || workMode !== 'All'
 
+  const searchExpanded = searchFocused || hasActiveFilters
+
   const clearFilters = () => {
     setQuery('')
     setType('All')
     setLocation('All')
     setWorkMode('All')
+  }
+
+  const removeFilters = (changes) => {
+    if (changes.query !== undefined) {
+      setQuery(changes.query)
+    }
+    if (changes.type !== undefined) {
+      setType(changes.type)
+    }
+    if (changes.location !== undefined) {
+      setLocation(changes.location)
+    }
+    if (changes.workMode !== undefined) {
+      setWorkMode(changes.workMode)
+    }
   }
 
   const results = useMemo(
@@ -127,34 +149,52 @@ function OpportunityDiscovery() {
           <NotificationBell />
         </header>
 
-        <OpportunityFilters
-          query={query}
-          type={type}
-          location={location}
-          workMode={workMode}
-          locations={locations}
-          onQueryChange={setQuery}
-          onTypeChange={setType}
-          onLocationChange={setLocation}
-          onWorkModeChange={setWorkMode}
-        />
+        <section
+          role="search"
+          className="mb-6"
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
+        >
+          <div className="max-w-xl">
+            <OpportunitySearch value={query} onChange={setQuery} />
+          </div>
+
+          <div
+            id="opportunity-filters"
+            className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+              searchExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+            }`}
+          >
+            <div className="min-h-0 overflow-hidden" inert={!searchExpanded} aria-hidden={!searchExpanded}>
+              <div className="mt-4 border-t border-gray-200 pt-4">
+                <OpportunityFilters
+                  type={type}
+                  location={location}
+                  workMode={workMode}
+                  locations={locations}
+                  onTypeChange={setType}
+                  onLocationChange={setLocation}
+                  onWorkModeChange={setWorkMode}
+                />
+                <ActiveFilterChips
+                  query={query}
+                  type={type}
+                  location={location}
+                  workMode={workMode}
+                  onRemoveFilters={removeFilters}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
 
         {!loading && !error && (
-          <div className="mt-6 mb-4 flex flex-wrap items-center justify-between gap-2">
+          <div className="mt-4 mb-4">
             <p className="text-sm text-gray-600">
               Showing{' '}
               <span className="font-semibold text-gray-900">{results.length}</span> of{' '}
               {opportunities.length} opportunities
             </p>
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={clearFilters}
-                className="text-sm font-medium text-blue-600 hover:text-blue-700"
-              >
-                Clear filters
-              </button>
-            )}
           </div>
         )}
 

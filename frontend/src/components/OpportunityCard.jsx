@@ -252,23 +252,6 @@ function OpportunityCard({ opportunity, match }) {
         ))}
       </div>
 
-      <details className="group mt-4">
-        <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-700">
-          Why this match?
-          <svg
-            className="h-4 w-4 text-gray-400 transition-transform group-open:rotate-180"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden="true"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </summary>
-        <MatchBreakdown match={match} opportunity={opportunity} />
-      </details>
-
       <div className="mt-4">
         <EligibilityDetails match={match} />
       </div>
@@ -278,7 +261,12 @@ function OpportunityCard({ opportunity, match }) {
           <span className="text-gray-500">Apply by </span>
           <span className="font-medium text-gray-900">{formatDate(opportunity.deadline)}</span>
         </div>
-        <DeadlineText deadline={opportunity.deadline} />
+        <button
+          type="button"
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Apply
+        </button>
       </div>
     </article>
   )
