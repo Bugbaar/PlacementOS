@@ -23,97 +23,6 @@ function formatScore(score) {
   return Number.isInteger(score) ? String(score) : score.toFixed(1)
 }
 
-function CheckIcon({ passed }) {
-  return (
-    <svg
-      className={`h-4 w-4 shrink-0 ${passed ? 'text-emerald-600' : 'text-rose-500'}`}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth="2"
-      aria-hidden="true"
-    >
-      {passed ? (
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-      ) : (
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-      )}
-    </svg>
-  )
-}
-
-function EligibilityDetails({ match }) {
-  const details = match.eligibilityDetails ?? {}
-
-  const checks = [
-    { key: 'cgpa', label: 'CGPA' },
-    { key: 'branch', label: 'Branch' },
-    { key: 'graduationYear', label: 'Graduation year' },
-    { key: 'backlogs', label: 'Active backlogs' },
-  ]
-
-  return (
-    <div className="mt-3">
-      <p className="text-sm font-semibold text-gray-900">Eligibility</p>
-      <ul className="mt-2 grid gap-x-6 gap-y-2 sm:grid-cols-2">
-        {checks.map(({ key, label }) => {
-          const check = details[key]
-          if (!check) {
-            return null
-          }
-          return (
-            <li
-              key={key}
-              title={check.reason}
-              className="flex items-center gap-2 text-sm text-gray-700"
-            >
-              <CheckIcon passed={check.passed} />
-              <span>{label}</span>
-            </li>
-          )
-        })}
-      </ul>
-    </div>
-  )
-}
-
-function PreferenceMatch({ label, matched, reason }) {
-  return (
-    <li className="flex items-center gap-2 text-sm text-gray-700">
-      <CheckIcon passed={matched} />
-      <span className="font-medium text-gray-900">{label}</span>
-      {reason && <span className="text-gray-500">· {reason}</span>}
-    </li>
-  )
-}
-
-function MatchExplanation({ match }) {
-  const details = match.matchingDetails ?? {}
-
-  return (
-    <div className="mt-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
-      <p className="text-sm font-semibold text-gray-900">Why this matches you</p>
-      <ul className="mt-2 space-y-1.5">
-        <PreferenceMatch
-          label="Role / domain"
-          matched={Boolean(details.roleDomain?.matched)}
-          reason={details.roleDomain?.matched ? 'Preferred' : 'Not a preference'}
-        />
-        <PreferenceMatch
-          label="Location"
-          matched={Boolean(details.location?.matched)}
-          reason={details.location?.matched ? 'Preferred' : 'Outside preferences'}
-        />
-        <PreferenceMatch
-          label="Opportunity type"
-          matched={Boolean(details.opportunityType?.matched)}
-          reason={details.opportunityType?.matched ? 'Preferred' : 'Different type'}
-        />
-      </ul>
-    </div>
-  )
-}
-
 function ApplyControl({ match, applied, submitting, onApply }) {
   const canApply = match.relevant && match.eligible
 
@@ -307,14 +216,6 @@ function OpportunityCard({ opportunity, match, applied, submitting, onApply }) {
           </span>
         ))}
       </div>
-      <div className="mt-2">
-        <MatchExplanation match={match} />
-      </div>
-
-      <div className="mt-4">
-        <EligibilityDetails match={match} />
-      </div>
-
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
         <div className="text-sm">
           <span className="text-gray-500">Apply by </span>

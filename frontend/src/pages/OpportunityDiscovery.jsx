@@ -5,18 +5,17 @@ import {
   OpportunityFilters,
   OpportunitySearch,
 } from '../components/OpportunityFilters'
-import NotificationBell from '../components/NotificationBell'
+import { filterOpportunities, getUniqueLocations } from '../utils/opportunityUtils'
 import { fetchStudentMatches } from '../services/matchService'
 import {
   applyToOpportunity,
   fetchStudentApplications,
 } from '../services/applicationService'
 import { CURRENT_STUDENT_ID } from '../config'
-import { filterOpportunities, getUniqueLocations } from '../utils/opportunityUtils'
 
 function LoadingGrid() {
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-6">
       {Array.from({ length: 4 }, (_, index) => (
         <div key={index} className="h-72 animate-pulse rounded-xl border border-gray-200 bg-white" />
       ))}
@@ -177,12 +176,7 @@ function OpportunityDiscovery({ onNavigate }) {
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               Opportunity Discovery
             </h1>
-            <p className="mt-2 max-w-2xl text-base text-gray-600">
-              Explore internships and full-time roles that match your skills.
-              Search, filter, and apply before the deadline.
-            </p>
           </div>
-          <NotificationBell />
         </header>
 
         <section
@@ -258,7 +252,7 @@ function OpportunityDiscovery({ onNavigate }) {
             onAction={clearFilters}
           />
         ) : (
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6">
             {results.map((opportunity) => (
               <OpportunityCard
                 key={opportunity.id}

@@ -59,8 +59,34 @@ export const getOpportunityAnalytics = (req, res) => {
   })
 }
 
-export const createOpportunity = (req, res) => {
-  const result = opportunityService.createOpportunity(req.body)
+export const closeOpportunityById = (req, res) => {
+  const { id } = req.params
+  const result = opportunityService.closeOpportunity(id)
+
+  if (!result.ok) {
+    res.status(result.status).json({
+      success: false,
+      error: {
+        code:
+          result.status === 404
+            ? 'OPPORTUNITY_NOT_FOUND'
+            : result.status === 409
+              ? 'OPPORTUNITY_ALREADY_CLOSED'
+              : 'INVALID_OPPORTUNITY_ID',
+        message: result.message,
+      },
+    })
+    return
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Opportunity closed successfully',
+    data: result.data,
+  })
+}
+
+export const createOpportunity = (req, res) => {  const result = opportunityService.createOpportunity(req.body)
 
   if (!result.ok) {
     res.status(result.status).json({

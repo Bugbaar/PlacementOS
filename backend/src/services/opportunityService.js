@@ -72,11 +72,32 @@ export const createOpportunity = (payload) => {
     allowedBranches: payload.allowedBranches ?? [],
     graduationYears: payload.graduationYears ?? [],
     maximumActiveBacklogs: payload.maximumActiveBacklogs ?? 0,
+    closed: false,
   }
 
   opportunities.push(opportunity)
 
   return { ok: true, data: opportunity }
+}
+
+export const closeOpportunity = (id) => {
+  const result = getOpportunityById(id)
+
+  if (!result.ok) {
+    return result
+  }
+
+  if (result.data.closed) {
+    return {
+      ok: false,
+      status: 409,
+      message: 'Opportunity is already closed',
+    }
+  }
+
+  result.data.closed = true
+
+  return { ok: true, data: result.data }
 }
 
 const validateOpportunityPayload = (payload) => {

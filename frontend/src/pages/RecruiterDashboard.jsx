@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   fetchOpportunities,
   fetchApplications,
+  closeOpportunity,
 } from '../services/opportunityService'
 
 function formatDate(deadline) {
@@ -19,21 +20,6 @@ function getStatus(opportunity) {
   const today = new Date()
   today.setHours(23, 59, 59, 999)
   return deadline >= today ? 'Active' : 'Expired'
-}
-
-function Metric({ label, value, tone = 'brand' }) {
-  const color = {
-    brand: 'text-brand-600',
-    teal: 'text-teal-500',
-    green: 'text-emerald-600',
-    gray: 'text-gray-900',
-  }[tone]
-  return (
-    <div className="rounded-lg border border-gray-100 bg-gray-50/70 px-3 py-2.5">
-      <p className={`text-xl font-bold ${color}`}>{value}</p>
-      <p className="mt-0.5 text-xs text-gray-500">{label}</p>
-    </div>
-  )
 }
 
 function ApplicationsDrawer({ opportunityId }) {
@@ -106,9 +92,10 @@ function ApplicationsDrawer({ opportunityId }) {
   )
 }
 
-function OpportunityRow({ opportunity, expanded, onToggle }) {
+function OpportunityRow({ opportunity, expanded, onToggle, onClose }) {
   const analytics = opportunity.analytics ?? {}
-  const status = getStatus(opportunity)
+  const closed = Boolean(opportunity.closed)
+  const status = closed ? 'Closed' : getStatus(opportunity)
 
   return (
     <div className="card-lift rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -118,15 +105,28 @@ function OpportunityRow({ opportunity, expanded, onToggle }) {
             <h3 className="text-lg font-semibold text-gray-900">{opportunity.role}</h3>
             <p className="text-sm text-gray-600">{opportunity.company}</p>
           </div>
-          <span
-            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-              status === 'Active'
-                ? 'bg-emerald-50 text-emerald-700'
-                : 'bg-gray-100 text-gray-500'
-            }`}
-          >
-            {status}
-          </span>
+          <div className="flex items-center gap-2">
+            {!closed && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:border-gray-400 hover:bg-gray-50"
+              >
+                Close
+              </button>
+            )}
+            <span
+              className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                closed
+                  ? 'bg-gray-200 text-gray-600'
+                  : status === 'Active'
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'bg-gray-100 text-gray-500'
+              }`}
+            >
+              {status}
+            </span>
+          </div>
         </div>
 
         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-gray-600">
@@ -141,12 +141,13 @@ function OpportunityRow({ opportunity, expanded, onToggle }) {
           <span>Apply by {formatDate(opportunity.deadline)}</span>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
-          <Metric label="Evaluated" value={analytics.totalStudentsEvaluated ?? '—'} tone="gray" />
-          <Metric label="Relevant" value={analytics.relevantStudents ?? '—'} />
-          <Metric label="Eligible" value={analytics.eligibleStudents ?? '—'} tone="teal" />
-          <Metric label="Notified" value={analytics.studentsNotified ?? '—'} />
-          <Metric label="Applications" value={analytics.applicationsReceived ?? 0} tone="green" />
+        <div className="mt-4 flex items-center gap-3">
+          <div className="rounded-lg border border-emerald-100 bg-emerald-50/70 px-3 py-2.5">
+            <p className="text-xl font-bold text-emerald-600">
+              {analytics.applicationsReceived ?? 0}
+            </p>
+            <p className="mt-0.5 text-xs text-gray-500">Applications received</p>
+          </div>
         </div>
 
         <div className="mt-4">
@@ -187,6 +188,23 @@ function RecruiterDashboard({ onNavigate }) {
 
   const load = useCallback(() => fetchOpportunities(), [])
 
+  const handleClose = useCallback(
+    async (opportunityId) => {
+      try {
+        await closeOpportunity(opportunityId)
+        setOpportunities((previous) =>
+          previous.map((opportunity) =>
+            opportunity.id === opportunityId
+              ? { ...opportunity, closed: true }
+              : opportunity,
+          ),
+        )
+      } catch (requestError) {
+        setError(requestError.message)
+      }
+    },
+    [],
+  )
   useEffect(() => {
     let cancelled = false
     load()
@@ -207,22 +225,15 @@ function RecruiterDashboard({ onNavigate }) {
     }
   }, [load])
 
-  const totalApplications = opportunities.reduce(
-    (sum, opportunity) => sum + (opportunity.analytics?.applicationsReceived ?? 0),
-    0,
-  )
-  const activeCount = opportunities.filter((o) => getStatus(o) === 'Active').length
-
   if (loading) {
     return (
       <main className="min-h-screen py-10">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-4 md:grid-cols-3">
-            {Array.from({ length: 3 }, (_, index) => (
-              <div key={index} className="h-28 animate-pulse rounded-xl border border-gray-200 bg-white" />
+          <div className="space-y-4">
+            {Array.from({ length: 2 }, (_, index) => (
+              <div key={index} className="h-48 animate-pulse rounded-xl border border-gray-200 bg-white" />
             ))}
           </div>
-          <div className="mt-6 h-48 animate-pulse rounded-xl border border-gray-200 bg-white" />
         </div>
       </main>
     )
@@ -234,10 +245,6 @@ function RecruiterDashboard({ onNavigate }) {
         <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">My Opportunities</h1>
-            <p className="mt-2 max-w-2xl text-base text-gray-600">
-              See every opportunity you have posted, its reach among students, and the
-              applications you have received.
-            </p>
           </div>
           <button
             type="button"
@@ -257,23 +264,6 @@ function RecruiterDashboard({ onNavigate }) {
             Post Opportunity
           </button>
         </header>
-
-        {!error && opportunities.length > 0 && (
-          <div className="mb-8 grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <p className="text-3xl font-bold text-gray-900">{opportunities.length}</p>
-              <p className="mt-1 text-sm text-gray-500">Opportunities posted</p>
-            </div>
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <p className="text-3xl font-bold text-brand-600">{activeCount}</p>
-              <p className="mt-1 text-sm text-gray-500">Active opportunities</p>
-            </div>
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <p className="text-3xl font-bold text-emerald-600">{totalApplications}</p>
-              <p className="mt-1 text-sm text-gray-500">Total applications received</p>
-            </div>
-          </div>
-        )}
 
         {error ? (
           <div className="rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center">
@@ -325,6 +315,7 @@ function RecruiterDashboard({ onNavigate }) {
                     current === opportunity.id ? null : opportunity.id,
                   )
                 }
+                onClose={() => handleClose(opportunity.id)}
               />
             ))}
           </div>

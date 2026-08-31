@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import Landing from './pages/Landing'
 import OpportunityDiscovery from './pages/OpportunityDiscovery'
-import BrowseOpportunities from './pages/BrowseOpportunities'
 import StudentProfile from './pages/StudentProfile'
 import RecruiterDashboard from './pages/RecruiterDashboard'
 import PostOpportunity from './pages/PostOpportunity'
+import NotificationBell from './components/NotificationBell'
 
 function Logo({ onHome }) {
   return (
@@ -52,14 +52,28 @@ function AppNav({ items, active, onNavigate, experience, onSwitch }) {
               key={item.key}
               type="button"
               onClick={() => onNavigate(item.key)}
-              className={`rounded-lg px-2.5 py-2 text-sm font-medium transition hover:bg-gray-50 ${
+              className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium transition hover:bg-gray-50 ${
                 active === item.key ? 'text-brand-700' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
+              {item.icon && (
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  aria-hidden="true"
+                >
+                  {item.icon}
+                </svg>
+              )}
               <span className="sm:hidden">{item.shortLabel}</span>
               <span className="hidden sm:inline">{item.label}</span>
             </button>
           ))}
+
+          {experience === 'Student' && <NotificationBell />}
 
           <button
             type="button"
@@ -91,13 +105,24 @@ function AppNav({ items, active, onNavigate, experience, onSwitch }) {
 
 const STUDENT_ITEMS = [
   { key: 'student-discover', label: 'Discover', shortLabel: 'Discover' },
-  { key: 'student-browse', label: 'Browse Opportunities', shortLabel: 'Browse' },
-  { key: 'student-profile', label: 'My Profile', shortLabel: 'Profile' },
+  {
+    key: 'student-profile',
+    label: 'My Profile',
+    shortLabel: 'Profile',
+    icon: (
+      <>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </>
+    ),
+  },
 ]
 
 const RECRUITER_ITEMS = [
   { key: 'recruiter-dashboard', label: 'My Opportunities', shortLabel: 'Mine' },
-  { key: 'recruiter-post', label: 'Post Opportunity', shortLabel: 'Post' },
 ]
 
 function App() {
@@ -133,13 +158,6 @@ function App() {
           <div className="app-backdrop">
             {studentNav('student-discover')}
             <OpportunityDiscovery onNavigate={navigate} />
-          </div>
-        )
-      case 'student-browse':
-        return (
-          <div className="app-backdrop">
-            {studentNav('student-browse')}
-            <BrowseOpportunities onNavigate={navigate} />
           </div>
         )
       case 'student-profile':

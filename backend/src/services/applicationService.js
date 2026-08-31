@@ -109,6 +109,15 @@ export const applyToOpportunity = (studentId, opportunityId) => {
     }
   }
 
+  if (opportunityResult.data.closed) {
+    return {
+      ok: false,
+      status: 403,
+      code: 'OPPORTUNITY_CLOSED',
+      message: 'This opportunity is no longer accepting applications',
+    }
+  }
+
   if (alreadyApplied(studentId, opportunityId)) {
     return {
       ok: false,

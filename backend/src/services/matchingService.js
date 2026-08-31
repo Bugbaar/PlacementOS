@@ -225,5 +225,6 @@ export const matchStudentToOpportunity = (student, opportunity) => {
 
 export const getStudentMatches = (student) =>
   getAllOpportunities()
+    .filter((opportunity) => !opportunity.closed)
     .map((opportunity) => matchStudentToOpportunity(student, opportunity))
     .sort((a, b) => b.matchScore - a.matchScore)

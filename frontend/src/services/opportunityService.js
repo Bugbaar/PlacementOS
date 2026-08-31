@@ -12,6 +12,12 @@ export function fetchOpportunities() {
   return request('/opportunities')
 }
 
+export function closeOpportunity(opportunityId) {
+  return request(`/opportunities/${opportunityId}/close`, {
+    method: 'PATCH',
+  })
+}
+
 export function fetchOpportunityAnalytics(opportunityId) {
   return request(`/opportunities/${opportunityId}/analytics`)
 }

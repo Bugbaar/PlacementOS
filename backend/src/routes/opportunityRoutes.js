@@ -5,6 +5,7 @@ import {
   getOpportunityById,
   getOpportunityAnalytics,
   createOpportunity,
+  closeOpportunityById,
 } from '../controllers/opportunityController.js'
 import { applyToOpportunity, getApplicationsForOpportunity } from '../controllers/applicationController.js'
 
@@ -15,6 +16,7 @@ router.get('/:id/analytics', getOpportunityAnalytics)
 router.get('/:id/applications', getApplicationsForOpportunity)
 router.get('/:id', getOpportunityById)
 router.post('/', createOpportunity)
+router.patch('/:id/close', closeOpportunityById)
 router.post('/:id/apply', applyToOpportunity)
 
 export default router
