@@ -1,382 +1,48 @@
-# 🎓 PlacementOS
+# AI Resume Reviewer + ATS Scorer
 
-> **Open-source AI-powered placement operating system for students, colleges, universities, recruiters, and placement cells.**
+Implements the "AI Resume Intelligence" module from PlacementOS's roadmap: ATS score, resume review, and skill/section extraction.
 
-PlacementOS is an open-source platform designed to modernize campus placements by bringing students, recruiters, universities, and placement teams into one intelligent ecosystem.
+## Approach
 
-Our mission is to make placements transparent, data-driven, AI-powered, and accessible to every student.
+Resume quality is scored using two combined layers rather than a single LLM call:
 
----
+1. **Deterministic ATS checks** — contact info presence, standard section headers, resume length, and keyword match against a target role. These are fast, free, reproducible, and give a defensible baseline score with no dependency on model output.
+2. **LLM qualitative review** (LangChain.js + OpenAI) — generates specific, content-aware suggestions (e.g. "quantify the impact of the bullet under Experience") and flags missing sections the regex checks might not catch.
 
-# 🤔 Why PlacementOS?
+Keeping the ATS score rule-based, with the LLM layered on top for qualitative feedback, means the score itself is explainable and won't shift between runs, while the improvement suggestions stay flexible and specific to each resume.
 
-Campus placements are still managed through spreadsheets, emails, WhatsApp groups, and disconnected portals.
+## Structure
 
-Students struggle to:
-
-- Find placement opportunities
-- Track applications
-- Build ATS-friendly resumes
-- Prepare for interviews
-- Understand eligibility criteria
-
-Placement cells struggle to:
-
-- Manage thousands of students
-- Verify eligibility
-- Communicate updates
-- Generate reports
-- Coordinate recruiters
-
-Recruiters struggle to:
-
-- Discover qualified candidates
-- Screen resumes efficiently
-- Schedule interviews
-- Manage hiring pipelines
-
-PlacementOS brings everything together into one intelligent platform.
-
----
-
-# 🎯 Vision
-
-Build the world's leading open-source placement operating system.
-
-A platform where:
-
-- 🎓 Students discover opportunities.
-- 🏫 Colleges manage placements efficiently.
-- 🏢 Recruiters hire the right talent.
-- 🤖 AI accelerates the hiring process.
-- 🌍 Communities connect talent with opportunities.
-
----
-
-# 🚀 Mission
-
-Empower every student with equal access to career opportunities while enabling educational institutions and recruiters with modern, AI-driven placement infrastructure.
-
----
-
-# 🧩 Platform Modules
-
-## 🎓 Student Portal
-
-A personalized placement dashboard.
-
-### Features
-
-- Student Profile
-- Resume Builder
-- Skill Profile
-- Portfolio
-- Placement Timeline
-- Application Tracker
-
----
-
-## 🏫 Placement Cell Dashboard
-
-Manage campus placements efficiently.
-
-### Features
-
-- Student Database
-- Company Management
-- Drive Management
-- Eligibility Engine
-- Bulk Communication
-- Reports & Analytics
-
----
-
-## 🏢 Recruiter Portal
-
-A complete hiring workspace.
-
-### Features
-
-- Company Dashboard
-- Job Posting
-- Candidate Discovery
-- Resume Screening
-- Interview Scheduling
-- Hiring Pipeline
-
----
-
-## 📄 AI Resume Intelligence
-
-Improve resume quality using AI.
-
-### Features
-
-- ATS Score
-- Resume Review
-- Skill Extraction
-- Resume Suggestions
-- Resume Versioning
-
----
-
-## 🤖 AI Placement Assistant
-
-Personal career guidance.
-
-### Features
-
-- Career Roadmaps
-- Interview Preparation
-- Company Recommendations
-- Skill Recommendations
-- Resume Feedback
-- Placement Readiness Score
-
----
-
-## 📝 Placement Drive Management
-
-End-to-end placement workflow.
-
-### Features
-
-- Drive Creation
-- Registration
-- Eligibility Verification
-- Shortlisting
-- Interview Scheduling
-- Offer Management
-
----
-
-## 📊 Analytics Dashboard
-
-Placement insights for institutions.
-
-### Features
-
-- Placement Statistics
-- Company Analytics
-- Student Performance
-- Department Reports
-- Salary Analytics
-- Placement Trends
-
----
-
-## 💬 Communication Hub
-
-Keep everyone informed.
-
-### Features
-
-- Announcements
-- Notifications
-- Email Integration
-- WhatsApp Integration
-- Discussion Forums
-
----
-
-# 🌍 Who Is It For?
-
-PlacementOS is built for:
-
-- Students
-- Universities
-- Colleges
-- Placement Cells
-- Recruiters
-- Companies
-- Career Coaches
-- Training & Placement Officers
-
----
-
-# 🏗 Technology Stack
-
-## Frontend
-
-- React.js
-- TypeScript
-- Tailwind CSS
-- Redux Toolkit
-
-## Backend
-
-- Node.js
-- Express.js
-
-## Database
-
-- MongoDB
-- Mongoose
-
-## Authentication
-
-- JWT
-- OAuth 2.0
-
-## Storage
-
-- Cloudinary
-
-## Real-Time
-
-- Socket.IO
-
-## Infrastructure
-
-- Docker
-- GitHub Actions
-- Nginx
-
-## APIs
-
-- REST APIs
-
----
-
-# 📂 Repository Structure
-
-```text
-placement-os
-│
-├── frontend/
-├── backend/
-├── docs/
-├── infrastructure/
-├── scripts/
-├── .github/
-├── README.md
-├── CONTRIBUTING.md
-├── LICENSE
-└── docker-compose.yml
+```
+backend/
+  routes/resumeAnalyze.js   - POST /api/resume/analyze
+  services/resumeParser.js  - PDF/DOCX text extraction
+  services/atsChecker.js    - deterministic scoring
+  services/llmAnalyzer.js   - LangChain + OpenAI qualitative review
+frontend/
+  components/ResumeAnalyzer.tsx - upload UI + results display
 ```
 
----
+No database is used — the endpoint is stateless; each request is analyzed and returned without persistence.
 
-# 🚧 Current Development Areas
+## Running locally
 
-We're actively looking for contributors in:
+```
+cd backend
+npm install
+cp .env.example .env   # add your OPENAI_API_KEY
+npm start
+```
 
-## 💻 Backend
+`POST /api/resume/analyze` with a multipart form field `resume` (PDF or DOCX) and optional `targetRole` string.
 
-- Student APIs
-- Placement APIs
-- Company APIs
-- Recruiter APIs
-- Authentication
-- Notification System
+## Edge cases handled
 
-## 🎨 Frontend
+- Unsupported file types → 415 with a clear message
+- Empty/unreadable resumes → 422
+- Malformed LLM JSON output → automatic retry, then a graceful fallback response so the ATS score still returns
+- File size capped at 5MB via multer
 
-- Student Dashboard
-- Placement Cell Dashboard
-- Recruiter Portal
-- Resume Builder
-- Analytics Dashboard
+## Integrating into PlacementOS
 
-## 🤖 AI
-
-- Resume Analysis
-- ATS Scoring
-- Skill Extraction
-- Placement Recommendations
-- Career Assistant
-
-## 📖 Documentation
-
-- API Documentation
-- System Architecture
-- Setup Guide
-- Contributor Guide
-
-## ⚙ Infrastructure
-
-- Docker
-- CI/CD
-- Monitoring
-- Deployment
-
----
-
-# 🌱 Good First Issues
-
-Perfect for first-time contributors.
-
-- Documentation
-- UI Improvements
-- API Endpoints
-- Unit Tests
-- Bug Fixes
-
-Look for:
-
-- `good-first-issue`
-- `help-wanted`
-- `documentation`
-
----
-
-# 🤝 Contributing
-
-We welcome:
-
-- Backend Engineers
-- Frontend Engineers
-- AI Engineers
-- DevOps Engineers
-- UI/UX Designers
-- Product Designers
-- Technical Writers
-- Students
-- Placement Coordinators
-
-Every contribution helps students discover better opportunities and helps institutions modernize their placement process.
-
----
-
-# 🌎 Long-Term Vision
-
-PlacementOS aims to become the global open infrastructure for campus recruitment.
-
-Imagine a world where:
-
-- Every student has access to equal placement opportunities.
-- Colleges manage placements without spreadsheets or manual processes.
-- Recruiters discover the best talent through AI-powered matching.
-- Students receive personalized guidance throughout their career journey.
-- Universities, companies, and communities collaborate through one connected platform.
-
-This is the future we're building.
-
----
-
-# ❤️ Join the Mission
-
-If you're passionate about:
-
-- Open Source
-- Education Technology
-- Artificial Intelligence
-- Career Development
-- Campus Placements
-- Building Products That Matter
-
-We'd love to build with you.
-
-⭐ Star the repository
-
-🐛 Report issues
-
-🚀 Submit a Pull Request
-
-🤝 Become a Founding Contributor
-
----
-
-## Built by the **BugBaar Global** Community.
-
-### **Empowering Students. Modernizing Placements. Creating Opportunities.**
+Mount `backend/routes/resumeAnalyze.js` onto the existing PlacementOS Express app under `/api/resume`, and drop `ResumeAnalyzer.tsx` into the Student Portal's Resume Builder section.
