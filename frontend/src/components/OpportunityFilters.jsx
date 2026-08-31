@@ -83,10 +83,13 @@ export function OpportunityFilters({
   type,
   location,
   workMode,
+  domain,
   locations,
+  domains,
   onTypeChange,
   onLocationChange,
   onWorkModeChange,
+  onDomainChange,
 }) {
   return (
     <div className="grid gap-4 md:grid-cols-3">
@@ -110,11 +113,27 @@ export function OpportunityFilters({
         options={['Remote', 'Hybrid', 'On-site']}
         onChange={onWorkModeChange}
       />
+
+      {domains && onDomainChange && (
+        <SelectField
+          label="Domain"
+          value={domain}
+          options={domains}
+          onChange={onDomainChange}
+        />
+      )}
     </div>
   )
 }
 
-export function ActiveFilterChips({ query, type, location, workMode, onRemoveFilters }) {
+export function ActiveFilterChips({
+  query,
+  type,
+  location,
+  workMode,
+  domain,
+  onRemoveFilters,
+}) {
   const chips = []
 
   if (query.trim() !== '') {
@@ -145,6 +164,13 @@ export function ActiveFilterChips({ query, type, location, workMode, onRemoveFil
       remove: () => onRemoveFilters({ workMode: 'All' }),
     })
   }
+  if (domain && domain !== 'All') {
+    chips.push({
+      key: 'domain',
+      label: `Domain: ${domain}`,
+      remove: () => onRemoveFilters({ domain: 'All' }),
+    })
+  }
 
   if (chips.length === 0) {
     return null
@@ -172,7 +198,13 @@ export function ActiveFilterChips({ query, type, location, workMode, onRemoveFil
       <button
         type="button"
         onClick={() =>
-          onRemoveFilters({ query: '', type: 'All', location: 'All', workMode: 'All' })
+          onRemoveFilters({
+            query: '',
+            type: 'All',
+            location: 'All',
+            workMode: 'All',
+            domain: 'All',
+          })
         }
         className="ml-1 text-xs font-medium text-blue-600 transition hover:text-blue-700"
       >

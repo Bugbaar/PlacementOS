@@ -7,6 +7,10 @@ import {
 } from '../components/OpportunityFilters'
 import NotificationBell from '../components/NotificationBell'
 import { fetchStudentMatches } from '../services/matchService'
+import {
+  applyToOpportunity,
+  fetchStudentApplications,
+} from '../services/applicationService'
 import { CURRENT_STUDENT_ID } from '../config'
 import { filterOpportunities, getUniqueLocations } from '../utils/opportunityUtils'
 
@@ -36,7 +40,7 @@ function EmptyState({ message, subMessage, actionLabel, onAction }) {
   )
 }
 
-function OpportunityDiscovery() {
+function OpportunityDiscovery({ onNavigate }) {
   const [matches, setMatches] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -45,6 +49,9 @@ function OpportunityDiscovery() {
   const [location, setLocation] = useState('All')
   const [workMode, setWorkMode] = useState('All')
   const [searchFocused, setSearchFocused] = useState(false)
+  const [appliedIds, setAppliedIds] = useState(() => new Set())
+  const [submittingId, setSubmittingId] = useState(null)
+  const [applyError, setApplyError] = useState(null)
 
   const loadMatches = useCallback(
     () => fetchStudentMatches(CURRENT_STUDENT_ID),
@@ -54,10 +61,18 @@ function OpportunityDiscovery() {
   useEffect(() => {
     let cancelled = false
 
-    loadMatches()
-      .then((body) => {
+    Promise.all([
+      loadMatches(),
+      fetchStudentApplications(CURRENT_STUDENT_ID),
+    ])
+      .then(([matchesBody, applicationsBody]) => {
         if (!cancelled) {
-          setMatches(body.data)
+          setMatches(matchesBody.data)
+          setAppliedIds(
+            new Set(
+              applicationsBody.data.map((application) => application.opportunityId),
+            ),
+          )
           setError(null)
           setLoading(false)
         }
@@ -122,15 +137,36 @@ function OpportunityDiscovery() {
   const retry = () => {
     setLoading(true)
     setError(null)
-    loadMatches()
-      .then((body) => {
-        setMatches(body.data)
+    Promise.all([
+      loadMatches(),
+      fetchStudentApplications(CURRENT_STUDENT_ID),
+    ])
+      .then(([matchesBody, applicationsBody]) => {
+        setMatches(matchesBody.data)
+        setAppliedIds(
+          new Set(
+            applicationsBody.data.map((application) => application.opportunityId),
+          ),
+        )
         setLoading(false)
       })
       .catch((requestError) => {
         setError(requestError.message)
         setLoading(false)
       })
+  }
+
+  const handleApply = async (opportunity) => {
+    setSubmittingId(opportunity.id)
+    setApplyError(null)
+    try {
+      await applyToOpportunity(opportunity.id, CURRENT_STUDENT_ID)
+      setAppliedIds((current) => new Set(current).add(opportunity.id))
+    } catch (requestError) {
+      setApplyError(requestError.message)
+    } finally {
+      setSubmittingId(null)
+    }
   }
 
   return (

@@ -220,7 +220,7 @@ function SectionCard({ step, title, description, children }) {
   )
 }
 
-function SuccessView({ onPostAnother, suggestedDeadline }) {
+function SuccessView({ onPostAnother, onViewOpportunities, suggestedDeadline }) {
   return (
     <div className="mx-auto max-w-xl rounded-xl border border-green-200 bg-green-50 p-10 text-center shadow-sm">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
@@ -257,18 +257,27 @@ function SuccessView({ onPostAnother, suggestedDeadline }) {
           <span aria-hidden="true">🔔</span> Students notified
         </span>
       </div>
-      <button
-        type="button"
-        onClick={onPostAnother}
-        className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-      >
-        Post another opportunity
-      </button>
+      <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        <button
+          type="button"
+          onClick={onViewOpportunities}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          View My Opportunities
+        </button>
+        <button
+          type="button"
+          onClick={onPostAnother}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+        >
+          Post another opportunity
+        </button>
+      </div>
     </div>
   )
 }
 
-function PostOpportunity({ onPosted }) {
+function PostOpportunity({ onNavigate }) {
   const [form, setForm] = useState(initState)
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
@@ -363,6 +372,7 @@ function PostOpportunity({ onPosted }) {
               setErrors({})
               setPosted(null)
             }}
+            onViewOpportunities={() => onNavigate && onNavigate('recruiter-dashboard')}
             suggestedDeadline={form.deadline ? new Date(`${form.deadline}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
           />
         </div>

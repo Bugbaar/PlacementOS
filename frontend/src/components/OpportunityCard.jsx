@@ -11,6 +11,7 @@ function MetaItem({ icon, children }) {
 }
 
 function formatDate(deadline) {
+  if (!deadline) return '—'
   return new Date(deadline).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -76,7 +77,115 @@ function EligibilityDetails({ match }) {
   )
 }
 
-function OpportunityCard({ opportunity, match }) {
+function PreferenceMatch({ label, matched, reason }) {
+  return (
+    <li className="flex items-center gap-2 text-sm text-gray-700">
+      <CheckIcon passed={matched} />
+      <span className="font-medium text-gray-900">{label}</span>
+      {reason && <span className="text-gray-500">· {reason}</span>}
+    </li>
+  )
+}
+
+function MatchExplanation({ match }) {
+  const details = match.matchingDetails ?? {}
+
+  return (
+    <div className="mt-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
+      <p className="text-sm font-semibold text-gray-900">Why this matches you</p>
+      <ul className="mt-2 space-y-1.5">
+        <PreferenceMatch
+          label="Role / domain"
+          matched={Boolean(details.roleDomain?.matched)}
+          reason={details.roleDomain?.matched ? 'Preferred' : 'Not a preference'}
+        />
+        <PreferenceMatch
+          label="Location"
+          matched={Boolean(details.location?.matched)}
+          reason={details.location?.matched ? 'Preferred' : 'Outside preferences'}
+        />
+        <PreferenceMatch
+          label="Opportunity type"
+          matched={Boolean(details.opportunityType?.matched)}
+          reason={details.opportunityType?.matched ? 'Preferred' : 'Different type'}
+        />
+      </ul>
+    </div>
+  )
+}
+
+function ApplyControl({ match, applied, submitting, onApply }) {
+  const canApply = match.relevant && match.eligible
+
+  if (applied) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 ring-1 ring-emerald-200">
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        Applied
+      </span>
+    )
+  }
+
+  if (canApply) {
+    return (
+      <button
+        type="button"
+        onClick={onApply}
+        disabled={submitting}
+        className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {submitting ? 'Applying…' : 'Apply Now'}
+      </button>
+    )
+  }
+
+  if (match.relevant && !match.eligible) {
+    return (
+      <div className="flex flex-col items-end gap-1">
+        <span className="inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 ring-1 ring-gray-200">
+          Not Eligible
+        </span>
+        <span className="text-xs text-rose-600">
+          Meets relevance but fails an eligibility requirement
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <span className="inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 ring-1 ring-gray-200">
+        Improve Match to Apply
+      </span>
+      <span className="text-xs text-gray-500">
+        Relevance below the threshold or requirements unmet
+      </span>
+    </div>
+  )
+}
+
+function MatchScore({ match }) {
+  return (
+    <div>
+      <p className="text-right text-2xl font-bold text-brand-600">
+        {formatScore(match.matchScore)}
+        <span className="text-sm font-semibold text-gray-400">%</span>
+      </p>
+      <span className="text-xs text-gray-500">Match score</span>
+    </div>
+  )
+}
+
+function OpportunityCard({ opportunity, match, applied, submitting, onApply }) {
   const matchedSkills = useMemo(
     () =>
       new Set(
@@ -88,10 +197,10 @@ function OpportunityCard({ opportunity, match }) {
   const isMatchedSkill = (skill) => matchedSkills.has(skill.toLowerCase())
 
   return (
-    <article className="flex flex-col rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+    <article className="card-lift flex flex-col rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-sm font-semibold text-white">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-sm font-semibold text-white">
             {opportunity.company.charAt(0)}
           </div>
           <div>
@@ -103,13 +212,7 @@ function OpportunityCard({ opportunity, match }) {
           <Badge tone={opportunity.opportunityType === 'Internship' ? 'blue' : 'violet'}>
             {opportunity.opportunityType}
           </Badge>
-          <div className="text-right">
-            <p className="text-2xl font-bold text-blue-600">
-              {formatScore(match.matchScore)}
-              <span className="text-sm font-semibold text-gray-400">%</span>
-            </p>
-            <span className="text-xs text-gray-500">Match score</span>
-          </div>
+          <MatchScore match={match} />
         </div>
       </div>
 
@@ -204,22 +307,25 @@ function OpportunityCard({ opportunity, match }) {
           </span>
         ))}
       </div>
+      <div className="mt-2">
+        <MatchExplanation match={match} />
+      </div>
 
       <div className="mt-4">
         <EligibilityDetails match={match} />
       </div>
 
-      <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-4">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
         <div className="text-sm">
           <span className="text-gray-500">Apply by </span>
           <span className="font-medium text-gray-900">{formatDate(opportunity.deadline)}</span>
         </div>
-        <button
-          type="button"
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Apply
-        </button>
+        <ApplyControl
+          match={match}
+          applied={applied}
+          submitting={submitting}
+          onApply={onApply}
+        />
       </div>
     </article>
   )

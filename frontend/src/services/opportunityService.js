@@ -7,3 +7,15 @@ export function createOpportunity(payload) {
     body: JSON.stringify(payload),
   })
 }
+
+export function fetchOpportunities() {
+  return request('/opportunities')
+}
+
+export function fetchOpportunityAnalytics(opportunityId) {
+  return request(`/opportunities/${opportunityId}/analytics`)
+}
+
+export function fetchApplications(opportunityId) {
+  return request(`/opportunities/${opportunityId}/applications`)
+}
