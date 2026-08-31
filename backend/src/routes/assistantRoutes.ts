@@ -1,0 +1,27 @@
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import { chat, getInsights } from '../controllers/assistantController';
+import { validate } from '../middleware/validate';
+import { chatRequestSchema } from '../validators/assistantValidator';
+
+const router = express.Router();
+
+// Rate limiting: 10 requests per minute for the chat endpoint
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: {
+    success: false,
+    error: {
+      code: 'RATE_LIMIT_EXCEEDED',
+      message: 'Too many messages sent. Please wait a minute before trying again.'
+    }
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+router.post('/chat', chatLimiter, validate(chatRequestSchema), chat);
+router.get('/insights/:studentId', getInsights);
+
+export default router;

@@ -59,6 +59,52 @@ Empower every student with equal access to career opportunities while enabling e
 
 ---
 
+# 🏆 Current MVP Implementation (Student Intelligence)
+
+This repository currently includes a fully functional MVP focusing on the **student placement journey**, built for the Bugbaar Internship Round 1 selection process.
+
+### MVP Features Included:
+- **Student Profiles**: Manage skills, education, and preferences.
+- **Opportunity Discovery**: View and filter active placement opportunities.
+- **Explainable Matching Engine**: A deterministic algorithm that calculates a match score based on technical skills, academics, and preferences.
+- **Eligibility Engine**: Hard-constraint checking (CGPA, Branch, Year).
+- **Skill-Gap Analysis**: Highlights missing skills for specific roles.
+- **Placement Readiness**: A rule-based readiness score and suggestions.
+- **Application Tracking**: Manage application status (Saved, Applied, Interview, etc.).
+- **AI Placement Assistant (Powered by Groq)**: A real-time, context-aware LLM chatbot that provides personalized interview prep, 30-day learning plans, and opportunity analysis based on the student's actual backend profile.
+
+The architecture is built with a modern MERN stack (React, Node.js, Express, MongoDB) and is fully Dockerized. See `docs/architecture.md` and `docs/ai-placement-assistant.md` for more details.
+
+---
+
+## 🚀 Getting Started
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Bugbaar/PlacementOS.git
+   cd PlacementOS
+   ```
+
+2. **Configure Environment:**
+   Create a `.env` file in the `backend/` directory based on `backend/.env.example`.
+   To enable AI features, you must add your Groq API Key:
+   ```env
+   GROQ_API_KEY=your_key_here
+   GROQ_MODEL=llama-3.1-8b-instant
+   ```
+
+3. **Start with Docker:**
+   ```bash
+   docker-compose up --build
+   ```
+
+4. **Seed the Database (Optional but recommended):**
+   ```bash
+   docker-compose exec backend npm run seed
+   ```
+
+---
+
 # 🧩 Platform Modules
 
 ## 🎓 Student Portal
