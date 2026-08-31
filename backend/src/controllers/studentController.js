@@ -30,3 +30,26 @@ export const getStudentById = (req, res) => {
     data: result.data,
   })
 }
+
+export const updateStudentById = (req, res) => {
+  const { id } = req.params
+  const result = studentService.updateStudent(id, req.body)
+
+  if (!result.ok) {
+    res.status(result.status).json({
+      success: false,
+      error: {
+        code: result.status === 404 ? 'STUDENT_NOT_FOUND' : 'INVALID_STUDENT_PROFILE',
+        message: result.message,
+        errors: result.errors,
+      },
+    })
+    return
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Student profile updated successfully',
+    data: result.data,
+  })
+}
