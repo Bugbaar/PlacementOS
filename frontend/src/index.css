@@ -1,14 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #eef4ff;
-  --color-brand-100: #dce8fd;
-  --color-brand-200: #c0d5fb;
-  --color-brand-500: #3b6cf0;
-  --color-brand-600: #2f54d6;
-  --color-brand-700: #2745b3;
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #4f46e5;
+  --color-brand-600: #4338ca;
+  --color-brand-700: #3730a3;
+  --color-brand-800: #312e81;
+  --color-brand-900: #1e3a8a;
+
   --color-teal-400: #2dd4bf;
-  --color-teal-500: #14b8a6;
+  --color-teal-500: #0d9488;
+  --color-teal-600: #0f766e;
+
+  --color-cta-500: #f59e0b;
+  --color-cta-600: #f97316;
+  --color-cta-700: #ea580c;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -19,17 +29,32 @@ html {
 }
 
 body {
-  background-color: #f8fafc;
+  background-color: #f1f5f9;
   color: #0f172a;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Subtle dotted texture that never competes with content */
+/* Dashboard / application pages: subtle light-gray + indigo geometric backdrop */
 .app-backdrop {
-  background-color: #f8fafc;
-  background-image: radial-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px);
-  background-size: 22px 22px;
+  background-color: #f1f5f9;
+  background-image:
+    radial-gradient(rgba(79, 70, 229, 0.06) 1px, transparent 1px),
+    linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+  background-size:
+    18px 18px,
+    72px 72px,
+    72px 72px;
+}
+
+/* Entry / role-selection page: flat illustration background */
+.landing-backdrop {
+  background-color: #eef2ff;
+  background-image:
+    radial-gradient(ellipse at 15% 20%, rgba(79, 70, 229, 0.10), transparent 45%),
+    radial-gradient(ellipse at 85% 15%, rgba(13, 148, 136, 0.10), transparent 40%),
+    radial-gradient(ellipse at 80% 85%, rgba(79, 70, 229, 0.08), transparent 45%);
 }
 
 /* Page entrance: fade + small upward movement */

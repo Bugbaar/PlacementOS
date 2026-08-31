@@ -364,7 +364,7 @@ function PostOpportunity({ onNavigate }) {
 
   if (posted) {
     return (
-      <main className="min-h-screen bg-gray-50 py-10">
+      <main className="min-h-screen py-10">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <SuccessView
             onPostAnother={() => {
@@ -381,7 +381,7 @@ function PostOpportunity({ onNavigate }) {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <main className="min-h-screen py-10">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <header className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">

@@ -58,10 +58,78 @@ function RecruiterIcon() {
   )
 }
 
+/* Flat illustration background: students and recruiters connecting, outlined
+   with graduation caps and briefcases as motifs, in a clean blue/teal palette. */
+function IllustrationLayer() {
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Graduation cap motif — top left */}
+      <svg
+        className="absolute left-[6%] top-[16%] h-24 w-24 text-brand-500/30 sm:h-32 sm:w-32"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3 1 9l11 6 11-6L12 3z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 13.97v-2.85l6 3.27 6-3.27v2.85 2.5L12 20l-6-3.4z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M22 9v4.5" />
+      </svg>
+
+      {/* Briefcase motif — top right */}
+      <svg
+        className="absolute right-[8%] top-[20%] h-20 w-20 text-teal-500/35 sm:h-28 sm:w-28"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      >
+        <rect x="3" y="8" width="18" height="12" rx="2" />
+        <path strokeLinecap="round" d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+      </svg>
+
+      {/* Connection motif — right, linking dots */}
+      <svg
+        className="absolute right-[16%] bottom-[18%] h-20 w-20 text-brand-400/40"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      >
+        <circle cx="12" cy="4" r="1.6" fill="currentColor" stroke="none" />
+        <circle cx="4" cy="12" r="1.6" fill="currentColor" stroke="none" />
+        <circle cx="20" cy="16" r="1.6" fill="currentColor" stroke="none" />
+        <path strokeLinecap="round" d="M12 5.6 5 11.5m7-5.6 7 8.7" />
+      </svg>
+
+      {/* Graduation cap motif — bottom left */}
+      <svg
+        className="absolute bottom-[14%] left-[12%] h-20 w-20 text-teal-500/30"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3 1 9l11 6 11-6L12 3z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12v4c0 1.5 3 3 7 3s7-1.5 7-3v-4" />
+      </svg>
+
+      {/* Small decorative shapes */}
+      <div className="absolute left-[18%] top-[32%] h-3 w-3 rounded-full bg-teal-400/40" />
+      <div className="absolute right-[28%] top-[12%] h-2.5 w-2.5 rounded-full bg-brand-400/40" />
+      <div className="absolute bottom-[30%] right-[10%] h-3 w-3 rounded-full bg-brand-400/30" />
+      <div className="absolute bottom-[10%] right-[38%] h-2 w-2 rounded-full bg-teal-400/40" />
+      <div className="absolute left-[40%] top-[9%] h-2 w-2 rounded-full bg-teal-400/40" />
+      <div className="absolute left-[6%] bottom-[38%] h-2.5 w-2.5 rounded-full bg-brand-400/30" />
+    </div>
+  )
+}
+
 function Landing({ onSelect }) {
   return (
-    <div className="app-backdrop min-h-screen">
-      <div className="mx-auto flex max-w-5xl flex-col items-center px-4 py-12 sm:py-20">
+    <div className="landing-backdrop relative min-h-screen">
+      <IllustrationLayer />
+      <div className="relative mx-auto flex max-w-5xl flex-col items-center px-4 py-12 sm:py-20">
         <header className="animate-page-enter mb-16 text-center">
           <div className="mx-auto flex items-center justify-center gap-2.5">
             <svg
@@ -83,7 +151,7 @@ function Landing({ onSelect }) {
           <button
             type="button"
             onClick={() => onSelect('student-discover')}
-            className="animate-page-enter group flex h-40 w-60 flex-col items-center justify-center gap-4 rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-brand-200 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="animate-page-enter group flex h-40 w-60 flex-col items-center justify-center gap-4 rounded-2xl border border-white bg-white/90 shadow-sm backdrop-blur-sm transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 ring-1 ring-brand-100 transition-transform duration-200 group-hover:-translate-y-0.5">
               <StudentIcon />
@@ -94,7 +162,7 @@ function Landing({ onSelect }) {
           <button
             type="button"
             onClick={() => onSelect('recruiter-dashboard')}
-            className="animate-page-enter group flex h-40 w-60 flex-col items-center justify-center gap-4 rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-teal-200 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+            className="animate-page-enter group flex h-40 w-60 flex-col items-center justify-center gap-4 rounded-2xl border border-white bg-white/90 shadow-sm backdrop-blur-sm transition hover:-translate-y-1 hover:border-teal-300 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
             style={{ animationDelay: '80ms' }}
           >
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-400/15 text-teal-500 ring-1 ring-teal-400/30 transition-transform duration-200 group-hover:-translate-y-0.5">
