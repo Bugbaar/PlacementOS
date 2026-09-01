@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+uploads/
+*.log
+.DS_Store
+coverage/
+.vscode/
+Thumbs.db
+backend/uploads/
+frontend/dist/
+scripts/sample-students-500.csv
