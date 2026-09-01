@@ -1,0 +1,24 @@
+{
+  "name": "placementos",
+  "version": "1.0.0",
+  "description": "PlacementOS backend API",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "npm run build && npm run start",
+    "build": "tsc",
+    "test": "npm run build && node --test dist/tests/studentController.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
+  }
+}
