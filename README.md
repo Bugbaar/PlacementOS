@@ -11,6 +11,8 @@
 
 **Built by [Bugbaar Global Community](https://github.com/Bugbaar)** — Empowering Students. Modernizing Placements. Creating Opportunities.
 
+> 🔗 **Repository:** https://github.com/shivamshrma09/PlacementOS
+
 ---
 
 ## Overview
@@ -348,9 +350,9 @@ MIT © [Bugbaar Global Community](https://github.com/Bugbaar)
 
 ## Community
 
-- **GitHub**: [Bugbaar/PlacementOS](https://github.com/Bugbaar/PlacementOS)
-- **Issues**: [Report a bug](https://github.com/Bugbaar/PlacementOS/issues)
-- **Discussions**: [Join the conversation](https://github.com/Bugbaar/PlacementOS/discussions)
+- **GitHub**: [shivamshrma09/PlacementOS](https://github.com/shivamshrma09/PlacementOS)
+- **Issues**: [Report a bug](https://github.com/shivamshrma09/PlacementOS/issues)
+- **Discussions**: [Join the conversation](https://github.com/shivamshrma09/PlacementOS/discussions)
 
 ---
 
