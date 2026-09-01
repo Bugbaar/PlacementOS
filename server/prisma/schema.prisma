@@ -1,0 +1,373 @@
+// Prisma Schema for PlacementOS
+// Database: Neon PostgreSQL (Serverless)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENUMS ====================
+
+enum Role {
+  STUDENT
+  RECRUITER
+  PLACEMENT_CELL
+  ADMIN
+  PARENT_ADVISOR
+}
+
+enum ApplicationStatus {
+  APPLIED
+  UNDER_REVIEW
+  SHORTLISTED
+  INTERVIEW_SCHEDULED
+  INTERVIEW_CLEARED
+  OFFER_EXTENDED
+  SELECTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum JobType {
+  FULL_TIME
+  INTERNSHIP
+  CONTRACT
+  PART_TIME
+  REMOTE
+  HYBRID
+  GIG_WORK
+}
+
+enum JobStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+  EXPIRED
+}
+
+enum DriveStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum AnnouncementPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NotificationType {
+  APPLICATION_UPDATE
+  INTERVIEW_SCHEDULED
+  OFFER_EXTENDED
+  NEW_JOB
+  DRIVE_ANNOUNCED
+  ANNOUNCEMENT
+  STUDENT_PROGRESS
+}
+
+enum JobSource {
+  INTERNAL
+  LINKEDIN
+  INDEED
+  GLASSDOOR
+  ANGELLIST
+  REFERRAL
+}
+
+enum Region {
+  INDIA
+  US
+  EU
+  UK
+  GLOBAL
+  REMOTE
+}
+
+// ==================== MODELS ====================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          Role      @default(STUDENT)
+  avatar        String?
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  student       Student?
+  company       Company?       @relation("CompanyCreator")
+  announcements Announcement[] @relation("AuthorAnnouncements")
+  notifications Notification[]
+  
+  @@map("users")
+}
+
+model Student {
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  college               String?
+  branch                String?
+  cgpa                  Float?
+  batch                 String?
+  skills                String[]
+  resumeUrl             String?
+  portfolio             String?
+  github                String?
+  linkedin              String?
+  phone                 String?
+  bio                   String?
+  location              String?
+  isPlaced              Boolean   @default(false)
+  placedCompany         String?
+  placedPackage         String?
+  placementReadiness    Int?      @default(70)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications          Application[]
+  resumes               Resume[]
+  driveRegistrations    DriveRegistration[]
+  watchedByParents      StudentParent[]
+
+  @@map("students")
+}
+
+model ParentAdvisor {
+  id              String           @id @default(cuid())
+  userId          String           @unique
+  phone           String?
+  relation        String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchingStudents StudentParent[]
+
+  @@map("parent_advisors")
+}
+
+model StudentParent {
+  id              String           @id @default(cuid())
+  studentId       String
+  parentId        String
+  canViewProgress Boolean          @default(true)
+  canViewApps     Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+
+  student         Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  parent          ParentAdvisor    @relation(fields: [parentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, parentId])
+  @@map("student_parents")
+}
+
+model ExternalJob {
+  id              String           @id @default(cuid())
+  source          JobSource
+  externalId      String?
+  title           String
+  company         String
+  description     String?
+  requirements    String[]
+  skills          String[]
+  salary          String?
+  salaryMin       Float?
+  salaryMax       Float?
+  salaryCurrency  String           @default("INR")
+  location        String?
+  region          Region           @default(INDIA)
+  type            JobType          @default(FULL_TIME)
+  applicationUrl  String
+  postedAt        DateTime?
+  expiresAt       DateTime?
+  isActive        Boolean          @default(true)
+  companyLogo     String?
+  companyWebsite  String?
+  rawData         String?
+  importedAt      DateTime         @default(now())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@unique([source, externalId])
+  @@index([source, isActive])
+  @@index([region, type])
+  @@map("external_jobs")
+}
+
+model Company {
+  id            String    @id @default(cuid())
+  name          String
+  logo          String?
+  website       String?
+  industry      String?
+  description   String?
+  location      String?
+  size          String?   // e.g., "50-200"
+  foundedYear   Int?
+  createdBy     String    @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  creator       User              @relation("CompanyCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  jobs          Job[]
+  drives        PlacementDrive[]
+
+  @@map("companies")
+}
+
+model Job {
+  id                  String        @id @default(cuid())
+  companyId           String
+  title               String
+  description         String
+  requirements        String[]
+  skills              String[]
+  salary              String?
+  salaryNumeric       Float?        // For analytics (e.g. 18.5 in LPA)
+  location            String?
+  type                JobType       @default(FULL_TIME)
+  status              JobStatus     @default(ACTIVE)
+  deadline            DateTime?
+  eligibilityCriteria String?
+  minCgpa             Float?
+  allowedBranches     String[]
+  openPositions       Int           @default(1)
+  experience          String?       // e.g., "0-2 years"
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  // Relations
+  company             Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  applications        Application[]
+
+  @@map("jobs")
+}
+
+model Application {
+  id                String            @id @default(cuid())
+  studentId         String
+  jobId             String
+  status            ApplicationStatus @default(APPLIED)
+  coverLetter       String?
+  notes             String?
+  interviewDate     DateTime?
+  interviewLink     String?
+  interviewRound    String?
+  offerLetterUrl    String?
+  offeredSalary     String?
+  appliedAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  student           Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  job               Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, jobId]) // One application per student per job
+  @@map("applications")
+}
+
+model PlacementDrive {
+  id              String              @id @default(cuid())
+  companyId       String
+  title           String
+  description     String?
+  date            DateTime
+  eligibility     String?
+  minCgpa         Float?
+  allowedBranches String[]
+  rounds          String[]            // e.g., ["Aptitude", "Coding", "Interview"]
+  status          DriveStatus         @default(UPCOMING)
+  venue           String?
+  coordinator     String?             // Contact person
+  packageOffered  String?             // e.g. "24 LPA"
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  // Relations
+  company         Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  registrations   DriveRegistration[]
+
+  @@map("placement_drives")
+}
+
+model DriveRegistration {
+  id          String         @id @default(cuid())
+  driveId     String
+  studentId   String
+  registeredAt DateTime      @default(now())
+  isApproved  Boolean        @default(true)
+
+  // Relations
+  drive       PlacementDrive @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  student     Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([driveId, studentId])
+  @@map("drive_registrations")
+}
+
+model Resume {
+  id            String    @id @default(cuid())
+  studentId     String
+  fileUrl       String
+  fileName      String?
+  atsScore      Int?      // 0-100
+  feedback      String?   // AI-generated feedback (JSON)
+  parsedSkills  String[]  // AI-extracted skills
+  strengths     String[]
+  improvements  String[]
+  targetRole    String?
+  version       Int       @default(1)
+  analyzedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  student       Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("resumes")
+}
+
+model Announcement {
+  id          String               @id @default(cuid())
+  authorId    String
+  title       String
+  content     String
+  priority    AnnouncementPriority @default(MEDIUM)
+  targetGroup String?              // "ALL", "2025_BATCH", "CSE"
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  // Relations
+  author      User                 @relation("AuthorAnnouncements", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@map("announcements")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead, createdAt])
+  @@map("notifications")
+}

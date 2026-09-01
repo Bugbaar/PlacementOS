@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: placementos-server
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/placementos?schema=public
+      - JWT_SECRET=production-secret-jwt-key
+      - JWT_REFRESH_SECRET=production-refresh-secret-key
+      - CLIENT_URL=http://localhost:5173
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # PostgreSQL Database (Local container fallback for Neon)
+  postgres:
+    image: postgres:16-alpine
+    container_name: placementos-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: placementos
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
