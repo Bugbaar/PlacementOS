@@ -1,0 +1,32 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: placementos-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: placementos-api
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: 5000
+      MONGO_URI: mongodb://mongo:27017/placementos
+      JWT_SECRET: placementos-docker-secret
+      CLIENT_ORIGIN: http://localhost
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./frontend
+    container_name: placementos-web
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:

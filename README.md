@@ -194,6 +194,37 @@ PlacementOS is built for:
 
 ---
 
+# ⚡ Getting Started — Eligibility Engine
+
+This repository currently ships the **Placement Cell Eligibility & Automated Shortlisting Engine**.
+
+### Demo login
+
+- Email: `tpo@placementos.dev`
+- Password: `Placement@2026`
+
+### Run locally
+
+```bash
+# API (MongoDB optional — in-memory fallback if Mongo is down)
+cd backend
+npm install
+npm run dev
+
+# Web (second terminal)
+cd frontend
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173). Upload `frontend/public/sample-students-500.csv` (or download it from the dropzone), set company criteria, then execute the engine to shortlist, stream pipeline logs, and export CSV/PDF.
+
+Optional MongoDB:
+
+```bash
+docker compose up mongo -d
+```
+
 # 🏗 Technology Stack
 
 ## Frontend

@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Backend install
+        working-directory: backend
+        run: npm install
+      - name: Frontend install
+        working-directory: frontend
+        run: npm install
+      - name: Frontend build
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_URL: http://localhost:5000

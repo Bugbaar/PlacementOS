@@ -11,4 +11,3 @@ coverage/
 Thumbs.db
 backend/uploads/
 frontend/dist/
-scripts/sample-students-500.csv
