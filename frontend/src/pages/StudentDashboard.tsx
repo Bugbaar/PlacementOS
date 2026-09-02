@@ -1,6 +1,7 @@
 import Header from "../components/layout/Header";
 import Sidebar from "../components/layout/Sidebar";
 import StatCard from "../components/dashboard/StatCard";
+import ReadinessCard from "../components/dashboard/ReadinessCard";
 
 function StudentDashboard() {
   return (
@@ -45,6 +46,9 @@ function StudentDashboard() {
               value="85%"
               description="Profile completion"
             />
+          </div>
+          <div className="mt-6">
+            <ReadinessCard />
           </div>
         </main>
       </div>
