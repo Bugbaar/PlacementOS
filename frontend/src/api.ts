@@ -8,11 +8,24 @@ import type {
   UserSession,
 } from './types';
 
+function getAuthHeaders(): Record<string, string> {
+  try {
+    const raw = localStorage.getItem('placementos.session');
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as { token?: string; studentId?: string };
+    const token = parsed.token ?? (parsed.studentId ? `demo-session-${parsed.studentId}` : undefined);
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(path, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...getAuthHeaders(),
       ...options?.headers,
     },
   });

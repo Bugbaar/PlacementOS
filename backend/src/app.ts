@@ -36,6 +36,13 @@ const applicationUpdateSchema = z.object({
   status: z.enum(['saved', 'applied', 'interview', 'offered', 'rejected']),
 });
 
+function getSessionStudentId(request: express.Request): string | null {
+  const auth = request.headers.authorization;
+  if (!auth) return null;
+  const match = /^Bearer demo-session-([a-zA-Z0-9_-]+)$/.exec(auth.trim());
+  return match?.[1] ?? null;
+}
+
 export function createApp(store = new PlacementStore()) {
   const app = express();
 
@@ -73,11 +80,22 @@ export function createApp(store = new PlacementStore()) {
         studentId: student.id,
         name: student.name,
         email: student.email,
+        token: `demo-session-${student.id}`,
       },
     });
   });
 
   app.get('/api/dashboard/:studentId', (request, response) => {
+    const callerId = getSessionStudentId(request);
+    if (!callerId) {
+      response.status(401).json({ error: 'Authentication required' });
+      return;
+    }
+    if (callerId !== request.params.studentId) {
+      response.status(403).json({ error: 'Access denied to this student dashboard' });
+      return;
+    }
+
     const dashboard = buildStudentDashboard(store, request.params.studentId);
     if (!dashboard) {
       response.status(404).json({ error: 'Student not found' });
@@ -87,6 +105,16 @@ export function createApp(store = new PlacementStore()) {
   });
 
   app.patch('/api/students/:studentId', (request, response) => {
+    const callerId = getSessionStudentId(request);
+    if (!callerId) {
+      response.status(401).json({ error: 'Authentication required' });
+      return;
+    }
+    if (callerId !== request.params.studentId) {
+      response.status(403).json({ error: 'Access denied to update this student profile' });
+      return;
+    }
+
     const parsed = studentUpdateSchema.safeParse(request.body);
     if (!parsed.success) {
       response.status(400).json({ error: 'Invalid student profile', details: parsed.error.issues });
@@ -105,6 +133,16 @@ export function createApp(store = new PlacementStore()) {
     const parsed = applicationCreateSchema.safeParse(request.body);
     if (!parsed.success) {
       response.status(400).json({ error: 'Invalid application', details: parsed.error.issues });
+      return;
+    }
+
+    const callerId = getSessionStudentId(request);
+    if (!callerId) {
+      response.status(401).json({ error: 'Authentication required' });
+      return;
+    }
+    if (callerId !== parsed.data.studentId) {
+      response.status(403).json({ error: 'Access denied to submit application for another student' });
       return;
     }
 
@@ -139,6 +177,16 @@ export function createApp(store = new PlacementStore()) {
     const existing = store.getApplication(request.params.applicationId);
     if (!existing) {
       response.status(404).json({ error: 'Application not found' });
+      return;
+    }
+
+    const callerId = getSessionStudentId(request);
+    if (!callerId) {
+      response.status(401).json({ error: 'Authentication required' });
+      return;
+    }
+    if (existing.studentId !== callerId) {
+      response.status(403).json({ error: 'Access denied to update this application' });
       return;
     }
 

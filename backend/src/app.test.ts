@@ -34,6 +34,7 @@ describe('PlacementOS API', () => {
       studentId: 'student-002',
       name: 'Priya Sharma',
       email: 'priya.sharma@example.edu',
+      token: 'demo-session-student-002',
     });
     await request(app)
       .post('/api/auth/login')
@@ -41,8 +42,15 @@ describe('PlacementOS API', () => {
       .expect(401);
   });
 
+  const authHeader = (studentId = 'student-001') => ({
+    Authorization: `Bearer demo-session-${studentId}`,
+  });
+
   it('returns a student dashboard with explainable drive decisions', async () => {
-    const response = await request(app).get('/api/dashboard/student-001').expect(200);
+    const response = await request(app)
+      .get('/api/dashboard/student-001')
+      .set(authHeader('student-001'))
+      .expect(200);
 
     expect(response.body.student.name).toBe('Aarav Mehta');
     expect(response.body.drives).toHaveLength(5);
@@ -55,18 +63,45 @@ describe('PlacementOS API', () => {
     });
   });
 
+  it('rejects unauthenticated and cross-student dashboard requests', async () => {
+    await request(app).get('/api/dashboard/student-001').expect(401);
+    await request(app)
+      .get('/api/dashboard/student-001')
+      .set(authHeader('student-002'))
+      .expect(403);
+  });
+
   it('creates an application for an eligible student and prevents duplicates', async () => {
     const payload = { studentId: 'student-001', driveId: 'drive-nova-frontend' };
-    const created = await request(app).post('/api/applications').send(payload).expect(201);
-    const repeated = await request(app).post('/api/applications').send(payload).expect(200);
+    const created = await request(app)
+      .post('/api/applications')
+      .set(authHeader('student-001'))
+      .send(payload)
+      .expect(201);
+    const repeated = await request(app)
+      .post('/api/applications')
+      .set(authHeader('student-001'))
+      .send(payload)
+      .expect(200);
 
     expect(created.body.status).toBe('applied');
     expect(repeated.body.id).toBe(created.body.id);
   });
 
+  it('rejects unauthenticated and cross-student application creation', async () => {
+    const payload = { studentId: 'student-001', driveId: 'drive-nova-frontend' };
+    await request(app).post('/api/applications').send(payload).expect(401);
+    await request(app)
+      .post('/api/applications')
+      .set(authHeader('student-002'))
+      .send(payload)
+      .expect(403);
+  });
+
   it('rejects an application when a student fails eligibility rules', async () => {
     const response = await request(app)
       .post('/api/applications')
+      .set(authHeader('student-001'))
       .send({ studentId: 'student-001', driveId: 'drive-pulse-product' })
       .expect(422);
 
@@ -77,20 +112,43 @@ describe('PlacementOS API', () => {
   it('rejects promoting a saved application to applied when the student is not eligible', async () => {
     const saved = await request(app)
       .post('/api/applications')
+      .set(authHeader('student-001'))
       .send({ studentId: 'student-001', driveId: 'drive-pulse-product', status: 'saved' })
       .expect(201);
 
     const response = await request(app)
       .patch(`/api/applications/${saved.body.id}`)
+      .set(authHeader('student-001'))
       .send({ status: 'applied' })
       .expect(422);
 
     expect(response.body.error).toMatch(/not eligible/i);
   });
 
+  it('rejects unauthenticated and cross-student application updates', async () => {
+    await request(app)
+      .patch('/api/applications/application-atlas')
+      .send({ status: 'interview' })
+      .expect(401);
+
+    await request(app)
+      .patch('/api/applications/application-atlas')
+      .set(authHeader('student-002'))
+      .send({ status: 'interview' })
+      .expect(403);
+  });
+
   it('validates profile updates and immediately recomputes eligibility', async () => {
-    await request(app).patch('/api/students/student-001').send({ cgpa: 8.6 }).expect(200);
-    const response = await request(app).get('/api/dashboard/student-001').expect(200);
+    await request(app)
+      .patch('/api/students/student-001')
+      .set(authHeader('student-001'))
+      .send({ cgpa: 8.6 })
+      .expect(200);
+
+    const response = await request(app)
+      .get('/api/dashboard/student-001')
+      .set(authHeader('student-001'))
+      .expect(200);
     const pulsePay = response.body.drives.find(
       (drive: { id: string }) => drive.id === 'drive-pulse-product',
     );
@@ -98,14 +156,34 @@ describe('PlacementOS API', () => {
     expect(pulsePay.eligibilityDecision.eligible).toBe(true);
   });
 
+  it('rejects unauthenticated and cross-student profile updates', async () => {
+    await request(app).patch('/api/students/student-001').send({ cgpa: 8.5 }).expect(401);
+    await request(app)
+      .patch('/api/students/student-001')
+      .set(authHeader('student-002'))
+      .send({ cgpa: 8.5 })
+      .expect(403);
+  });
+
   it('returns useful errors for invalid data and missing resources', async () => {
-    await request(app).patch('/api/students/student-001').send({ cgpa: 12 }).expect(400);
+    await request(app)
+      .patch('/api/students/student-001')
+      .set(authHeader('student-001'))
+      .send({ cgpa: 12 })
+      .expect(400);
+
     await request(app)
       .post('/api/applications')
+      .set(authHeader('student-001'))
       .set('Content-Type', 'application/json')
       .send('{"studentId":')
       .expect(400, { error: 'Request body must be valid JSON' });
-    await request(app).get('/api/dashboard/missing-student').expect(404);
+
+    await request(app)
+      .get('/api/dashboard/missing-student')
+      .set(authHeader('missing-student'))
+      .expect(404);
+
     await request(app).get('/api/not-a-route').expect(404);
   });
 });
