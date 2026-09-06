@@ -32,8 +32,8 @@ const markStyles: Record<string, string> = {
 
 function deadlineLabel(closingDate: string) {
   const milliseconds = new Date(closingDate).getTime() - Date.now();
+  if (milliseconds <= 0) return { text: 'Closed', urgent: true, closed: true };
   const days = Math.ceil(milliseconds / 86_400_000);
-  if (days < 0) return { text: 'Closed', urgent: true, closed: true };
   if (days === 0) return { text: 'Closes today', urgent: true, closed: false };
   return { text: `${days} day${days === 1 ? '' : 's'} left`, urgent: days <= 3, closed: false };
 }

@@ -18,7 +18,18 @@ const SESSION_KEY = 'placementos.session';
 function readSession(): UserSession | null {
   try {
     const value = localStorage.getItem(SESSION_KEY);
-    return value ? JSON.parse(value) as UserSession : null;
+    if (!value) return null;
+    const parsed = JSON.parse(value) as Partial<UserSession>;
+    if (
+      parsed &&
+      typeof parsed === 'object' &&
+      typeof parsed.studentId === 'string' &&
+      parsed.studentId.trim().length > 0
+    ) {
+      return parsed as UserSession;
+    }
+    localStorage.removeItem(SESSION_KEY);
+    return null;
   } catch {
     localStorage.removeItem(SESSION_KEY);
     return null;

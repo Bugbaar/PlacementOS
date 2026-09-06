@@ -26,6 +26,7 @@ describe('download builders', () => {
 
     expect(calendar).toContain('BEGIN:VCALENDAR');
     expect(calendar).toContain('DTSTART:20260903T183000Z');
+    expect(calendar).not.toContain('DTEND:');
     expect(calendar).toContain('SUMMARY:Nova\\, Labs — Frontend Engineer deadline');
     vi.useRealTimers();
   });

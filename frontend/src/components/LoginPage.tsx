@@ -92,7 +92,7 @@ export function LoginPage({ onBack, onLogin }: { onBack: () => void; onLogin: (s
 
               {error && <p className="mt-4 rounded-xl border border-rose-100 bg-rose-50 p-3 text-xs font-semibold text-rose-700" role="alert">{error}</p>}
 
-              <button className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-forest-900 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-forest-700 disabled:opacity-60">
+              <button type="submit" disabled={!email || submitting} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-forest-900 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-forest-700 disabled:opacity-60">
                 {submitting ? <><LoaderCircle className="animate-spin" size={17} />Signing in…</> : <>Sign in to workspace <ArrowRight size={17} /></>}
               </button>
             </fieldset>

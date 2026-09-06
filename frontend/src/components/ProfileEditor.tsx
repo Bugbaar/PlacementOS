@@ -10,27 +10,21 @@ interface ProfileEditorProps {
   onSave: (changes: Partial<Student>) => void;
 }
 
+const toFormState = (student: Student) => ({
+  name: student.name,
+  program: student.program,
+  branch: student.branch,
+  graduationYear: String(student.graduationYear),
+  cgpa: String(student.cgpa),
+  activeBacklogs: String(student.activeBacklogs),
+  skills: student.skills.join(', '),
+});
+
 export function ProfileEditor({ student, eligibleCount, totalDrives, saving, onSave }: ProfileEditorProps) {
-  const [form, setForm] = useState({
-    name: student.name,
-    program: student.program,
-    branch: student.branch,
-    graduationYear: String(student.graduationYear),
-    cgpa: String(student.cgpa),
-    activeBacklogs: String(student.activeBacklogs),
-    skills: student.skills.join(', '),
-  });
+  const [form, setForm] = useState(() => toFormState(student));
 
   useEffect(() => {
-    setForm({
-      name: student.name,
-      program: student.program,
-      branch: student.branch,
-      graduationYear: String(student.graduationYear),
-      cgpa: String(student.cgpa),
-      activeBacklogs: String(student.activeBacklogs),
-      skills: student.skills.join(', '),
-    });
+    setForm(toFormState(student));
   }, [student]);
 
   const update = (key: keyof typeof form, value: string) => setForm((current) => ({ ...current, [key]: value }));

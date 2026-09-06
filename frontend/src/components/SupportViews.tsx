@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import {
   BarChart3,
   BellRing,
@@ -19,7 +19,9 @@ import {
 import type { DashboardData, DetailedApplication, DriveWithDecision, Student } from '../types';
 
 export function AnalyticsView({ data }: { data: DashboardData }) {
-  const eligiblePercent = Math.round((data.stats.eligibleDrives / data.drives.length) * 100);
+  const eligiblePercent = data.drives.length
+    ? Math.round((data.stats.eligibleDrives / data.drives.length) * 100)
+    : 0;
   const stages = [
     { label: 'Saved', count: data.applications.filter((item) => item.status === 'saved').length, color: 'bg-slate-400' },
     { label: 'Applied', count: data.applications.filter((item) => item.status === 'applied').length, color: 'bg-sky-500' },
@@ -99,11 +101,30 @@ export function HelpView() {
   );
 }
 
+const defaultPreferences: Record<string, boolean> = {
+  emailAlerts: true,
+  deadlineReminders: true,
+  profileVisible: true,
+};
+
 export function SettingsView({ student, onLogout }: { student: Student; onLogout: () => void }) {
   const storageKey = `placementos.settings.${student.id}`;
   const [preferences, setPreferences] = useState(() => {
-    const stored = localStorage.getItem(storageKey);
-    return stored ? JSON.parse(stored) as Record<string, boolean> : { emailAlerts: true, deadlineReminders: true, profileVisible: true };
+    try {
+      const stored = localStorage.getItem(storageKey);
+      if (!stored) return { ...defaultPreferences };
+      const parsed = JSON.parse(stored) as Record<string, unknown>;
+      if (parsed && typeof parsed === 'object') {
+        const merged: Record<string, boolean> = { ...defaultPreferences };
+        for (const [key, defaultValue] of Object.entries(defaultPreferences)) {
+          merged[key] = typeof parsed[key] === 'boolean' ? parsed[key] : defaultValue;
+        }
+        return merged;
+      }
+      return { ...defaultPreferences };
+    } catch {
+      return { ...defaultPreferences };
+    }
   });
   const [saved, setSaved] = useState(false);
   const toggle = (key: string) => { setPreferences((current) => ({ ...current, [key]: !current[key] })); setSaved(false); };
@@ -130,6 +151,17 @@ export function SettingsView({ student, onLogout }: { student: Student; onLogout
 }
 
 export function NotificationsPanel({ applications, drives, onClose, onMarkRead }: { applications: DetailedApplication[]; drives: DriveWithDecision[]; onClose: () => void; onMarkRead: () => void }) {
+  const panelRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    panelRef.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [onClose]);
+
   const items = useMemo(() => {
     const interview = applications.find((item) => item.status === 'interview');
     const deadline = [...drives].filter((drive) => !drive.application).sort((a, b) => a.closingDate.localeCompare(b.closingDate))[0];
@@ -142,7 +174,7 @@ export function NotificationsPanel({ applications, drives, onClose, onMarkRead }
 
   return (
     <div className="fixed inset-0 z-50 bg-forest-900/25 backdrop-blur-sm" onMouseDown={(event) => { if (event.currentTarget === event.target) onClose(); }}>
-      <aside className="absolute right-0 top-0 h-full w-full max-w-md overflow-y-auto bg-white p-5 shadow-2xl sm:p-7" role="dialog" aria-modal="true" aria-label="Notifications">
+      <aside ref={panelRef} tabIndex={-1} className="absolute right-0 top-0 h-full w-full max-w-md overflow-y-auto bg-white p-5 shadow-2xl outline-none sm:p-7" role="dialog" aria-modal="true" aria-label="Notifications">
         <div className="flex items-start justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-forest-500">Updates</p><h2 className="mt-1 font-display text-2xl font-extrabold text-forest-900">Notifications</h2></div><button className="grid h-9 w-9 place-items-center rounded-xl bg-slate-100 text-slate-500" onClick={onClose} aria-label="Close notifications"><X size={17} /></button></div>
         <div className="mt-7 space-y-3">{items.map(({ title, detail, icon: Icon, tone }) => <article key={title} className="flex gap-3 rounded-2xl border border-slate-200 p-4"><span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${tone}`}><Icon size={17} /></span><div><h3 className="text-sm font-bold text-forest-900">{title}</h3><p className="mt-1 text-xs leading-5 text-slate-500">{detail}</p></div></article>)}</div>
         <button className="mt-5 w-full rounded-xl border border-slate-200 py-3 text-xs font-bold text-slate-600 hover:border-forest-500 hover:text-forest-700" onClick={() => { onMarkRead(); onClose(); }}>Mark all as read</button>

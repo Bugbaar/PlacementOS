@@ -30,7 +30,6 @@ export function buildCalendarFile(drive: PlacementDrive) {
     `UID:${escapeCalendar(drive.id)}@placementos`,
     `DTSTAMP:${calendarDate(new Date().toISOString())}`,
     `DTSTART:${deadline}`,
-    `DTEND:${deadline}`,
     `SUMMARY:${escapeCalendar(`${drive.company} — ${drive.role} deadline`)}`,
     `DESCRIPTION:${escapeCalendar(`${drive.type} · ${drive.workMode} · ${drive.salary}`)}`,
     `LOCATION:${escapeCalendar(drive.location)}`,
