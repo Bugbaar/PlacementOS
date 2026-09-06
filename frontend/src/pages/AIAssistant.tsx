@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import api from '../services/api';
 import { buildPlacementInsights } from '../utils/placementInsights';
+import { calculateReadinessScore } from '../utils/readinessScore';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -22,6 +23,7 @@ export default function AIAssistant() {
   const [fallbackMode, setFallbackMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const insights = buildPlacementInsights(currentStudent);
+  const readinessScore = calculateReadinessScore(currentStudent);
 
   const suggestedPrompts = [
     "Which opportunities should I apply to first?",
@@ -85,7 +87,7 @@ export default function AIAssistant() {
       {/* Left Column - Chat Interface */}
       <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-700 to-indigo-800 p-4 text-white flex items-center justify-between shrink-0">
+        <div className="bg-linear-to-r from-blue-700 to-indigo-800 p-4 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
               <Bot className="w-6 h-6" />
@@ -172,13 +174,13 @@ export default function AIAssistant() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask your placement assistant (Shift+Enter for newline)..."
-              className="w-full max-h-32 min-h-[52px] bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none overflow-y-auto"
+              className="w-full max-h-32 min-h-13 bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none overflow-y-auto"
               rows={input.split('\n').length > 1 ? Math.min(input.split('\n').length, 5) : 1}
             />
             <button
               onClick={() => sendMessage(input)}
               disabled={!input.trim() || loading}
-              className="bg-blue-600 text-white h-[52px] w-[52px] rounded-xl flex items-center justify-center shrink-0 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="bg-blue-600 text-white h-13 w-13 rounded-xl flex items-center justify-center shrink-0 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <Send className="w-5 h-5" />
             </button>
@@ -195,7 +197,7 @@ export default function AIAssistant() {
           <CardContent className="p-0">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between">
               <span className="text-gray-600 text-sm font-medium">Readiness Score</span>
-              <span className="text-lg font-bold text-blue-700">78%</span> {/* In a real app, fetch from backend context */}
+              <span className="text-lg font-bold text-blue-700">{readinessScore}%</span>
             </div>
             
             {insights.length > 0 ? (

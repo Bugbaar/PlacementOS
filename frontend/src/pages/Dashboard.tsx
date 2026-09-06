@@ -8,6 +8,7 @@ import { Button } from '../components/Button';
 import { Briefcase, Trophy, AlertCircle, ArrowRight, ExternalLink, Bot, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { buildPlacementInsights } from '../utils/placementInsights';
+import { calculateReadinessScore } from '../utils/readinessScore';
 
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispatch>();
@@ -28,18 +29,7 @@ export default function Dashboard() {
       </div>
     );
   }
-
-  // Calculate mock readiness score
-  const calculateReadiness = () => {
-    let score = 50; // base
-    if (currentStudent.cgpa >= 8) score += 15;
-    if (currentStudent.skills.length >= 5) score += 15;
-    if (currentStudent.preferredRoles.length > 0) score += 10;
-    if (currentStudent.resumeUrl) score += 10;
-    return Math.min(score, 100);
-  };
-
-  const readinessScore = calculateReadiness();
+  const readinessScore = calculateReadinessScore(currentStudent);
 
   return (
     <div className="space-y-6">
@@ -51,7 +41,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="col-span-1 md:col-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-none">
+        <Card className="col-span-1 md:col-span-2 bg-linear-to-br from-blue-600 to-indigo-700 text-white border-none">
           <CardContent className="p-8">
             <div className="flex items-center justify-between">
               <div>
@@ -103,7 +93,7 @@ export default function Dashboard() {
       </div>
 
       {/* AI Insights Section */}
-      <Card className="border-blue-100 bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
+      <Card className="border-blue-100 bg-linear-to-r from-blue-50/50 to-indigo-50/50">
         <CardHeader className="pb-3 border-b border-blue-100/50">
           <CardTitle className="flex items-center gap-2 text-blue-800">
             <Sparkles className="w-5 h-5 text-blue-600" />
