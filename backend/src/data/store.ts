@@ -6,11 +6,23 @@ export class PlacementStore {
   private readonly students: Student[];
   private readonly drives: PlacementDrive[];
   private readonly applications: Application[];
+  private readonly sessions: Map<string, string>;
 
   constructor() {
     this.students = structuredClone(seedStudents);
     this.drives = structuredClone(seedDrives);
     this.applications = structuredClone(seedApplications);
+    this.sessions = new Map();
+  }
+
+  createSession(studentId: string): string {
+    const token = randomUUID();
+    this.sessions.set(token, studentId);
+    return token;
+  }
+
+  getStudentIdBySessionToken(token: string): string | undefined {
+    return this.sessions.get(token);
   }
 
   getStudent(id: string) {

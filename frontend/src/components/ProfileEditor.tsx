@@ -27,18 +27,46 @@ export function ProfileEditor({ student, eligibleCount, totalDrives, saving, onS
     setForm(toFormState(student));
   }, [student]);
 
-  const update = (key: keyof typeof form, value: string) => setForm((current) => ({ ...current, [key]: value }));
+  const [error, setError] = useState<string | null>(null);
+
+  const update = (key: keyof typeof form, value: string) => {
+    setForm((current) => ({ ...current, [key]: value }));
+    setError(null);
+  };
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
+    const name = form.name.trim();
+    const program = form.program.trim();
+    const branch = form.branch.trim();
+    const skills = form.skills.split(',').map((skill) => skill.trim()).filter(Boolean);
+
+    if (name.length < 2) {
+      setError('Please enter a valid full name.');
+      return;
+    }
+    if (!program) {
+      setError('Programme cannot be blank.');
+      return;
+    }
+    if (!branch) {
+      setError('Branch / discipline cannot be blank.');
+      return;
+    }
+    if (skills.length === 0) {
+      setError('Please provide at least one skill.');
+      return;
+    }
+
+    setError(null);
     onSave({
-      name: form.name.trim(),
-      program: form.program.trim(),
-      branch: form.branch.trim(),
+      name,
+      program,
+      branch,
       graduationYear: Number(form.graduationYear),
       cgpa: Number(form.cgpa),
       activeBacklogs: Number(form.activeBacklogs),
-      skills: form.skills.split(',').map((skill) => skill.trim()).filter(Boolean),
+      skills,
     });
   };
 
@@ -66,6 +94,12 @@ export function ProfileEditor({ student, eligibleCount, totalDrives, saving, onS
             </Field>
           </div>
         </div>
+
+        {error && (
+          <p className="mt-4 rounded-xl border border-rose-100 bg-rose-50 p-3 text-xs font-semibold text-rose-700" role="alert">
+            {error}
+          </p>
+        )}
 
         <div className="mt-7 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-5">
           <p className="inline-flex items-center gap-2 text-xs text-slate-400"><ShieldCheck size={15} />Only eligibility-related information is used.</p>
