@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-slate-200;
+  }
+
+  body {
+    @apply m-0 min-w-[320px] bg-sand font-sans text-slate-900 antialiased;
+    background-image: radial-gradient(circle at 15% 0%, rgba(36, 121, 94, 0.055), transparent 26rem);
+  }
+
+  button,
+  input,
+  select {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .hero-pattern {
+    background-image:
+      radial-gradient(circle at 78% 25%, rgba(215, 244, 109, 0.12), transparent 12rem),
+      linear-gradient(135deg, #102f27 0%, #153d32 100%);
+  }
+}
+
+::selection {
+  background: #d7f46d;
+  color: #102f27;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: #bdc9c4;
+  background-clip: content-box;
+}
+
+button,
+select {
+  cursor: pointer;
+}
+
+button:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
+

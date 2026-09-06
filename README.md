@@ -8,6 +8,72 @@ Our mission is to make placements transparent, data-driven, AI-powered, and acce
 
 ---
 
+## ✨ Current MVP: Student Placement Workspace
+
+The repository now includes a working full-stack student journey. A student can:
+
+- Explore public opportunities in guest mode without creating an account
+- Discover and filter active placement drives
+- See an explainable eligibility decision for every drive
+- Understand which academic rule passed or failed
+- Compare matched and missing role skills
+- Save or submit an application
+- Track applications across five pipeline stages
+- Add a placement deadline to any calendar with an `.ics` export
+- Export their application history as a portable CSV file
+- Update their academic profile and recalculate every match instantly
+- Sign in as different seeded students with genuinely different profiles and pipelines
+- Use working notifications, analytics, help, settings, and account switching
+
+The MVP is intentionally focused on one complete, reliable workflow rather than a shallow implementation of every planned module.
+
+### Quick start
+
+Requirements: Node.js 20 or newer and npm.
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173`. The frontend proxies API requests to the Express server on `http://localhost:4000`. Seeded product data is included, so no database or API keys are required.
+
+Visitors land in the guest explorer first. Personal actions clearly invite sign-in, where reviewers can choose Aarav, Priya, or Kabir. The shared preview password is `placement123`. Authentication is explicitly a local evaluation flow; production JWT/OAuth is listed in the roadmap.
+
+### Quality checks
+
+```bash
+npm run test   # backend domain/API tests + frontend integration test
+npm run build  # strict TypeScript and production builds
+npm run check  # complete pre-PR check
+```
+
+### Implemented architecture
+
+```text
+frontend/   React 19, TypeScript, Tailwind CSS, Redux Toolkit, Vite
+backend/    Express 5, TypeScript, Zod validation, tested domain engine
+docs/       Architecture decisions and production roadmap
+.github/    Pull-request CI workflow
+```
+
+The current persistence layer is intentionally in memory for zero-configuration evaluation. It is isolated behind `PlacementStore` so MongoDB/Mongoose can be introduced without changing domain rules or frontend contracts. See [the architecture notes](docs/ARCHITECTURE.md) and [contribution guide](CONTRIBUTING.md).
+
+### REST API
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | Service health |
+| `GET` | `/api/drives/public` | Public opportunity catalogue for guest exploration |
+| `GET` | `/api/auth/demo-users` | Public demo-account choices |
+| `POST` | `/api/auth/login` | Validate a demo sign-in |
+| `GET` | `/api/dashboard/:studentId` | Student, drives, decisions, applications, and summary |
+| `PATCH` | `/api/students/:studentId` | Validate and update an eligibility profile |
+| `POST` | `/api/applications` | Save or apply to a drive |
+| `PATCH` | `/api/applications/:applicationId` | Move an application to a new stage |
+
+---
+
 # 🤔 Why PlacementOS?
 
 Campus placements are still managed through spreadsheets, emails, WhatsApp groups, and disconnected portals.
