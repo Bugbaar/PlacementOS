@@ -18,8 +18,8 @@ export class PlacementStore {
   }
 
   getStudentByEmail(email: string) {
-    const normalizedEmail = email.trim().toLocaleLowerCase();
-    return this.students.find((student) => student.email.toLocaleLowerCase() === normalizedEmail);
+    const normalizedEmail = email.trim().toLowerCase();
+    return this.students.find((student) => student.email.toLowerCase() === normalizedEmail);
   }
 
   getDemoStudents() {
@@ -45,6 +45,10 @@ export class PlacementStore {
 
   getDrives() {
     return this.drives;
+  }
+
+  getApplication(id: string) {
+    return this.applications.find((application) => application.id === id);
   }
 
   getApplicationsForStudent(studentId: string) {

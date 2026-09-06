@@ -74,6 +74,20 @@ describe('PlacementOS API', () => {
     expect(response.body.decision.checks.some((check: { passed: boolean }) => !check.passed)).toBe(true);
   });
 
+  it('rejects promoting a saved application to applied when the student is not eligible', async () => {
+    const saved = await request(app)
+      .post('/api/applications')
+      .send({ studentId: 'student-001', driveId: 'drive-pulse-product', status: 'saved' })
+      .expect(201);
+
+    const response = await request(app)
+      .patch(`/api/applications/${saved.body.id}`)
+      .send({ status: 'applied' })
+      .expect(422);
+
+    expect(response.body.error).toMatch(/not eligible/i);
+  });
+
   it('validates profile updates and immediately recomputes eligibility', async () => {
     await request(app).patch('/api/students/student-001').send({ cgpa: 8.6 }).expect(200);
     const response = await request(app).get('/api/dashboard/student-001').expect(200);

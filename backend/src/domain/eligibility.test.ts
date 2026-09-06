@@ -65,6 +65,22 @@ describe('evaluateEligibility', () => {
     expect(result.checks.find((check) => check.key === 'branch')?.passed).toBe(true);
   });
 
+  it('normalizes uppercase I consistently in branch and skill matching', () => {
+    const itDrive: PlacementDrive = {
+      ...drive,
+      eligibility: { ...drive.eligibility, allowedBranches: ['Information Technology'] },
+      skills: ['Information Technology', 'React'],
+    };
+    const result = evaluateEligibility(
+      { ...student, branch: 'INFORMATION TECHNOLOGY', skills: ['INFORMATION TECHNOLOGY', 'REACT'] },
+      itDrive,
+    );
+
+    expect(result.checks.find((check) => check.key === 'branch')?.passed).toBe(true);
+    expect(result.matchedSkills).toEqual(['Information Technology', 'React']);
+    expect(result.missingSkills).toEqual([]);
+  });
+
   it('reports every failed rule instead of stopping at the first failure', () => {
     const result = evaluateEligibility(
       { ...student, cgpa: 6.5, graduationYear: 2028, activeBacklogs: 2 },

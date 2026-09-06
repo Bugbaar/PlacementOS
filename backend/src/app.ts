@@ -136,14 +136,28 @@ export function createApp(store = new PlacementStore()) {
       return;
     }
 
+    const existing = store.getApplication(request.params.applicationId);
+    if (!existing) {
+      response.status(404).json({ error: 'Application not found' });
+      return;
+    }
+
+    if (parsed.data.status === 'applied') {
+      const student = store.getStudent(existing.studentId);
+      const drive = store.getDrive(existing.driveId);
+      if (student && drive) {
+        const decision = evaluateEligibility(student, drive);
+        if (!decision.eligible) {
+          response.status(422).json({ error: 'Student is not eligible for this drive', decision });
+          return;
+        }
+      }
+    }
+
     const application = store.updateApplicationStatus(
       request.params.applicationId,
       parsed.data.status,
     );
-    if (!application) {
-      response.status(404).json({ error: 'Application not found' });
-      return;
-    }
     response.json(application);
   });
 

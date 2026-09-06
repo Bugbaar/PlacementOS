@@ -5,7 +5,7 @@ import type {
   Student,
 } from './types.js';
 
-const normalize = (value: string) => value.trim().toLocaleLowerCase();
+const normalize = (value: string) => value.trim().toLowerCase();
 
 export function evaluateEligibility(
   student: Student,
