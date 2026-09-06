@@ -1,6 +1,6 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { chat, getInsights } from '../controllers/assistantController';
+import { chat } from '../controllers/assistantController';
 import { validate } from '../middleware/validate';
 import { chatRequestSchema } from '../validators/assistantValidator';
 
@@ -22,6 +22,5 @@ const chatLimiter = rateLimit({
 });
 
 router.post('/chat', chatLimiter, validate(chatRequestSchema), chat);
-router.get('/insights/:studentId', getInsights);
 
 export default router;

@@ -6,6 +6,7 @@ import { Bot, Send, RefreshCw, AlertCircle, ChevronRight, MessageSquare, Trash2,
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import api from '../services/api';
+import { buildPlacementInsights } from '../utils/placementInsights';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -18,9 +19,9 @@ export default function AIAssistant() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [insights, setInsights] = useState<string[]>([]);
   const [fallbackMode, setFallbackMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const insights = buildPlacementInsights(currentStudent);
 
   const suggestedPrompts = [
     "Which opportunities should I apply to first?",
@@ -29,15 +30,6 @@ export default function AIAssistant() {
     "Prepare me for a Full Stack Developer interview.",
     "Why is my match score low for some opportunities?"
   ];
-
-  // Fetch contextual insights on load
-  useEffect(() => {
-    if (currentStudent) {
-      api.get(`/assistant/insights/${currentStudent._id}`)
-        .then(res => setInsights(res.data.data.insights))
-        .catch(console.error);
-    }
-  }, [currentStudent]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

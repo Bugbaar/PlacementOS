@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import { fetchRecommendations } from '../store/opportunitiesSlice';
@@ -7,20 +7,17 @@ import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { Briefcase, Trophy, AlertCircle, ArrowRight, ExternalLink, Bot, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import api from '../services/api';
+import { buildPlacementInsights } from '../utils/placementInsights';
 
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispatch>();
   const { currentStudent } = useSelector((state: RootState) => state.student);
   const { recommendations, loading } = useSelector((state: RootState) => state.opportunities);
-  const [insights, setInsights] = useState<string[]>([]);
+  const insights = buildPlacementInsights(currentStudent);
 
   useEffect(() => {
     if (currentStudent) {
       dispatch(fetchRecommendations(currentStudent._id));
-      api.get(`/assistant/insights/${currentStudent._id}`)
-        .then(res => setInsights(res.data.data.insights))
-        .catch(console.error);
     }
   }, [dispatch, currentStudent]);
 
