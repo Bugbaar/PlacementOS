@@ -71,6 +71,8 @@ Student browses open roles with match scores and optional high-match filtering.
 ### 5. Opportunity details
 Student reviews eligibility, skill fit, and applies or saves the role.
 <img width="1872" height="982" alt="Screenshot 2026-09-24 190901" src="https://github.com/user-attachments/assets/d4a8913d-0838-466e-9bd2-89da63d571c8" />
+
+---
 <img width="1827" height="962" alt="Screenshot 2026-09-24 190915" src="https://github.com/user-attachments/assets/2760304f-a29e-4908-8bd0-152ef6b8b616" />
 
 
