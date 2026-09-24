@@ -4,9 +4,18 @@ import Opportunity from '../models/Opportunity';
 import Student from '../models/Student';
 import { sendSuccess, sendError } from '../utils/response';
 
+function isOwnerOrAdmin(req: Request, studentId: string): boolean {
+  if (!req.user) return false;
+  return req.user.role === 'admin' || req.user.id === studentId;
+}
+
 export const createApplication = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { studentId, opportunityId, status, notes } = req.body;
+
+    if (!isOwnerOrAdmin(req, studentId)) {
+      return sendError(res, 'FORBIDDEN', 'You can only create applications for yourself', 403);
+    }
 
     const student = await Student.findById(studentId);
     if (!student) return sendError(res, 'NOT_FOUND', 'Student not found', 404);
@@ -22,7 +31,7 @@ export const createApplication = async (req: Request, res: Response, next: NextF
     });
 
     await application.save();
-    
+
     // Populate opportunity for frontend convenience
     await application.populate('opportunityId');
     sendSuccess(res, application, 201);
@@ -36,7 +45,12 @@ export const createApplication = async (req: Request, res: Response, next: NextF
 
 export const getStudentApplications = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const applications = await Application.find({ studentId: req.params.studentId })
+    const studentId = String(req.params.studentId);
+    if (!isOwnerOrAdmin(req, studentId)) {
+      return sendError(res, 'FORBIDDEN', 'You can only view your own applications', 403);
+    }
+
+    const applications = await Application.find({ studentId })
       .populate('opportunityId')
       .sort({ updatedAt: -1 });
     sendSuccess(res, applications);
@@ -50,6 +64,10 @@ export const updateApplication = async (req: Request, res: Response, next: NextF
     const application = await Application.findById(req.params.id);
     if (!application) {
       return sendError(res, 'NOT_FOUND', 'Application not found', 404);
+    }
+
+    if (!isOwnerOrAdmin(req, application.studentId.toString())) {
+      return sendError(res, 'FORBIDDEN', 'You can only update your own applications', 403);
     }
 
     if (req.body.status) application.status = req.body.status;

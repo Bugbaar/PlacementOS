@@ -11,9 +11,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - '5000:5000'
+    # Secrets come from backend/.env (gitignored). Copy backend/.env.example first.
+    env_file:
+      - ./backend/.env
     environment:
       - PORT=5000
       - MONGO_URI=mongodb://mongodb:27017/placementos
+      # JWT_SECRET / GROQ_API_KEY / CORS_ORIGIN loaded via env_file — do not hardcode here
     depends_on:
       - mongodb
 

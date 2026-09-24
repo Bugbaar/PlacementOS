@@ -1,6 +1,7 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import { chat } from '../controllers/assistantController';
+import { authenticate } from '../middleware/auth';
 import { validate } from '../middleware/validate';
 import { chatRequestSchema } from '../validators/assistantValidator';
 
@@ -21,6 +22,6 @@ const chatLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-router.post('/chat', chatLimiter, validate(chatRequestSchema), chat);
+router.post('/chat', authenticate, chatLimiter, validate(chatRequestSchema), chat);
 
 export default router;

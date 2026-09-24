@@ -1,23 +1,22 @@
 import Groq from 'groq-sdk';
-import dotenv from 'dotenv';
-dotenv.config();
 
-// Ensure it doesn't crash on boot if missing, just log a warning.
-const apiKey = process.env.GROQ_API_KEY;
-const model = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
+const DEFAULT_MODEL = 'qwen/qwen3.8-27b';
 
-let groq: Groq | null = null;
-
-if (apiKey) {
-  groq = new Groq({ apiKey });
-} else {
-  console.warn('⚠️ GROQ_API_KEY is missing. AI Placement Assistant will use fallback mode.');
-}
-
-export const generateAIResponse = async (systemPrompt: string, userMessage: string, conversationHistory: any[] = []): Promise<string> => {
-  if (!groq) {
+function getGroqClient(): Groq {
+  const apiKey = process.env.GROQ_API_KEY?.trim();
+  if (!apiKey) {
     throw new Error('AI service is not configured (missing GROQ_API_KEY).');
   }
+  return new Groq({ apiKey });
+}
+
+export const generateAIResponse = async (
+  systemPrompt: string,
+  userMessage: string,
+  conversationHistory: any[] = []
+): Promise<string> => {
+  const groq = getGroqClient();
+  const model = process.env.GROQ_MODEL?.trim() || DEFAULT_MODEL;
 
   const messages = [
     { role: 'system', content: systemPrompt },
@@ -28,14 +27,15 @@ export const generateAIResponse = async (systemPrompt: string, userMessage: stri
   try {
     const response = await groq.chat.completions.create({
       messages: messages as any,
-      model: model,
-      temperature: 0.7,
-      max_tokens: 1024,
+      model,
+      temperature: 0.6,
+      max_completion_tokens: 2048,
+      top_p: 0.95,
     });
 
     return response.choices[0]?.message?.content || 'I could not generate a response at this time.';
   } catch (error: any) {
     console.error('Groq API Error:', error.message);
-    throw new Error('Unable to connect to the AI service. Please try again later.');
+    throw new Error('Unable to connect to the AI service. Please try again later.', { cause: error });
   }
 };

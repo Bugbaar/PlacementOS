@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 import Student from '../src/models/Student';
 import Opportunity from '../src/models/Opportunity';
 import Application from '../src/models/Application';
@@ -8,21 +9,44 @@ dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/placementos';
 
+function requireSeedCredential(name: string): string {
+  const value = process.env[name]?.trim();
+  if (!value) {
+    throw new Error(
+      `Missing ${name}. Set SEED_STUDENT_EMAIL, SEED_STUDENT_PASSWORD, SEED_ADMIN_EMAIL, and SEED_ADMIN_PASSWORD in backend/.env before seeding.`
+    );
+  }
+  return value;
+}
+
 const seedData = async () => {
+  if (process.env.NODE_ENV === 'production') {
+    console.error('Refusing to run seed while NODE_ENV=production');
+    process.exit(1);
+  }
+
   try {
+    const studentEmail = requireSeedCredential('SEED_STUDENT_EMAIL');
+    const studentPassword = requireSeedCredential('SEED_STUDENT_PASSWORD');
+    const adminEmail = requireSeedCredential('SEED_ADMIN_EMAIL');
+    const adminPassword = requireSeedCredential('SEED_ADMIN_PASSWORD');
+
     await mongoose.connect(MONGO_URI);
     console.log('Connected to MongoDB');
 
-    // Clear existing data
     await Student.deleteMany({});
     await Opportunity.deleteMany({});
     await Application.deleteMany({});
     console.log('Cleared existing data');
 
-    // Create a demo student
-    const student = await Student.create({
-      name: 'Jane Doe',
-      email: 'jane.doe@example.com',
+    const studentPasswordHash = await bcrypt.hash(studentPassword, 10);
+    const adminPasswordHash = await bcrypt.hash(adminPassword, 10);
+
+    await Student.create({
+      name: 'Sample Student',
+      email: studentEmail,
+      passwordHash: studentPasswordHash,
+      role: 'student',
       phone: '+91 9876543210',
       branch: 'Computer Science',
       college: 'Global Institute of Technology',
@@ -33,10 +57,25 @@ const seedData = async () => {
       preferredLocations: ['Remote', 'Bangalore'],
       experienceLevel: 'Fresher',
       bio: 'Passionate computer science student looking for software engineering roles.',
-      githubUrl: 'https://github.com/janedoe',
-      linkedinUrl: 'https://linkedin.com/in/janedoe',
+      githubUrl: 'https://github.com/example',
+      linkedinUrl: 'https://linkedin.com/in/example',
     });
-    console.log('Created Demo Student');
+    console.log('Created seed student account');
+
+    await Student.create({
+      name: 'Sample Admin',
+      email: adminEmail,
+      passwordHash: adminPasswordHash,
+      role: 'admin',
+      branch: 'Administration',
+      college: 'PlacementOS',
+      cgpa: 10,
+      graduationYear: 2026,
+      skills: [],
+      preferredRoles: [],
+      preferredLocations: [],
+    });
+    console.log('Created seed admin account');
 
     // Create opportunities
     const futureDate = new Date();

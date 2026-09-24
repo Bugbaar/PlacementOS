@@ -1,11 +1,10 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, User, Briefcase, FileText, Bot, Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, User, Briefcase, FileText, Bot, Menu, X, LogOut } from 'lucide-react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchStudent } from '../store/studentSlice';
+import { logout } from '../store/studentSlice';
 import { RootState, AppDispatch } from '../store';
 import clsx from 'clsx';
-import api from '../services/api';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -18,19 +17,14 @@ const navigation = [
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { currentStudent } = useSelector((state: RootState) => state.student);
 
-  // Auto-login a demo student if none exists
-  useEffect(() => {
-    if (!currentStudent) {
-      api.get('/students').then((res) => {
-        if (res.data.data.length > 0) {
-          dispatch(fetchStudent(res.data.data[0]._id));
-        }
-      }).catch(console.error);
-    }
-  }, [currentStudent, dispatch]);
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -91,16 +85,24 @@ export default function DashboardLayout() {
             })}
           </nav>
         </div>
-        <div className="p-4 border-t">
+        <div className="p-4 border-t space-y-3">
            <div className="flex items-center">
              <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
                {currentStudent?.name?.charAt(0) || 'S'}
              </div>
-             <div className="ml-3">
-               <p className="text-sm font-medium text-gray-700">{currentStudent?.name || 'Loading...'}</p>
+             <div className="ml-3 min-w-0">
+               <p className="text-sm font-medium text-gray-700 truncate">{currentStudent?.name || 'Loading...'}</p>
                <p className="text-xs text-gray-500 truncate">{currentStudent?.email}</p>
              </div>
            </div>
+           <button
+             type="button"
+             onClick={handleLogout}
+             className="w-full flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+           >
+             <LogOut className="h-4 w-4" />
+             Sign out
+           </button>
         </div>
       </div>
 
