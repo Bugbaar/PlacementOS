@@ -425,3 +425,67 @@ We'd love to build with you.
 ## Built by the **BugBaar Global** Community.
 
 ### **Empowering Students. Modernizing Placements. Creating Opportunities.**
+
+---
+
+# 🔧 Eligibility & Placement Analytics Contribution
+
+This contribution implements an initial Python-based eligibility and placement analytics engine for PlacementOS.
+
+The implementation focuses on two important areas already identified in the PlacementOS product vision:
+
+- 🎯 Placement eligibility verification
+- 📊 Placement reports and analytics
+
+The goal of this contribution is to provide a transparent and testable approach for evaluating student eligibility against placement drive requirements.
+
+## ✨ Features Implemented
+
+The eligibility engine evaluates students against placement drive requirements based on:
+
+- Minimum CGPA
+- Eligible branch
+- Graduation year
+- Required skills
+
+Instead of returning only an eligible or not eligible status, the system also provides clear reasons when a student does not meet the requirements.
+
+Example reasons may include:
+
+- CGPA is below the required minimum
+- Student branch is not eligible
+- Graduation year does not match
+- Required skills are missing
+
+## 📊 Analytics Implemented
+
+The analytics module processes eligibility results and provides:
+
+- Total number of evaluations
+- Total eligible evaluations
+- Overall eligibility rate
+- Most commonly missing skills
+- Branch-wise eligibility analytics
+
+These insights can later be integrated into the Placement Cell Dashboard and Analytics Dashboard proposed in PlacementOS.
+
+## 🏗 Contribution Structure
+
+```text
+PlacementOS/
+│
+├── data/
+│   ├── students.csv
+│   └── placement_drives.csv
+│
+├── src/
+│   ├── __init__.py
+│   ├── eligibility_engine.py
+│   └── analytics_engine.py
+│
+├── tests/
+│   └── test_eligibility.py
+│
+├── main.py
+├── requirements.txt
+└── README.md
