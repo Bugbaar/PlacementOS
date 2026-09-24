@@ -50,27 +50,42 @@ A chat experience grounded in the student's real profile, recommendations, and a
 
 ### 1. Sign in
 Student lands on the login screen and authenticates into the portal.
+<img width="723" height="642" alt="Screenshot 2026-09-24 190613" src="https://github.com/user-attachments/assets/e7f53925-d527-4137-8c6e-ef9524fa0834" />
+
 
 ### 2. Dashboard
 Overview of readiness, quick stats, short insights, and top recommended roles.
+<img width="1873" height="955" alt="Screenshot 2026-09-24 190759" src="https://github.com/user-attachments/assets/735ac41e-72e1-4722-9740-783d6d3920bb" />
+
 
 ### 3. My Profile
 Student edits personal info, education, and skills that drive matching and AI context.
+<img width="1780" height="971" alt="Screenshot 2026-09-24 190840" src="https://github.com/user-attachments/assets/19799eca-3564-4961-af03-7d8a498edf11" />
+
 
 ### 4. Opportunities
 Student browses open roles with match scores and optional high-match filtering.
+<img width="1872" height="982" alt="Screenshot 2026-09-24 190901" src="https://github.com/user-attachments/assets/d8746003-6dcb-4382-809c-0ae985600f0c" />
+
 
 ### 5. Opportunity details
 Student reviews eligibility, skill fit, and applies or saves the role.
+<img width="1872" height="982" alt="Screenshot 2026-09-24 190901" src="https://github.com/user-attachments/assets/d4a8913d-0838-466e-9bd2-89da63d571c8" />
+<img width="1827" height="962" alt="Screenshot 2026-09-24 190915" src="https://github.com/user-attachments/assets/2760304f-a29e-4908-8bd0-152ef6b8b616" />
+
 
 ### 6. Applications
 Student tracks submitted applications and status in one list.
+<img width="1767" height="962" alt="Screenshot 2026-09-24 191050" src="https://github.com/user-attachments/assets/7ec69142-3d7a-42ab-87fb-48172281ea05" />
+
 
 ### 7. AI Assistant
 Student opens the assistant with suggested prompts tied to their live profile.
+<img width="1886" height="975" alt="Screenshot 2026-09-24 191106" src="https://github.com/user-attachments/assets/a2552fcc-752c-4fea-a2d8-141b42da95c4" />
 
 ### 8. AI coaching reply
 Example conversation where the assistant ranks opportunities and calls out skill gaps.
+<img width="1907" height="957" alt="Screenshot 2026-09-24 192417" src="https://github.com/user-attachments/assets/33085228-7b0d-487f-b89b-ae24a647070e" />
 
 ## How this fits the wider PlacementOS vision
 
