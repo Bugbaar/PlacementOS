@@ -126,6 +126,20 @@ tools/eligibility-analytics/
 
 More detail: [tools/eligibility-analytics/README.md](./tools/eligibility-analytics/README.md).
 
+## Resume versioning (in-memory MVP)
+
+Students can keep **multiple named resume versions** and mark one as active (useful when tailoring for different companies).
+
+| Capability | Detail |
+|------------|--------|
+| Create / list / get | `/api/students/:studentId/resumes` |
+| Activate | `POST .../:versionId/activate` |
+| Delete | Inactive versions only (active cannot be deleted) |
+| Auth | JWT — self or admin |
+| Storage | **In-memory for now** (resets on restart); Mongo persistence can follow |
+
+See [docs/resume-versioning.md](./docs/resume-versioning.md).
+
 ## How this fits the wider PlacementOS vision
 
-`README.md` describes the full multi-sided operating system (students, placement cells, recruiters, analytics, communications). **This file is what exists in code today** — the student intelligence MVP plus the Python eligibility analytics tool.
+`README.md` describes the full multi-sided operating system (students, placement cells, recruiters, analytics, communications). **This file is what exists in code today** — the student intelligence MVP, the Python eligibility analytics tool, and resume versioning APIs.

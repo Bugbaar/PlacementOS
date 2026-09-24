@@ -9,6 +9,7 @@ import opportunityRoutes from './routes/opportunityRoutes';
 import applicationRoutes from './routes/applicationRoutes';
 import recommendationRoutes from './routes/recommendationRoutes';
 import assistantRoutes from './routes/assistantRoutes';
+import resumeVersionRoutes from './routes/resumeVersionRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -56,6 +57,7 @@ app.use('/api/opportunities', opportunityRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/assistant', assistantRoutes);
+app.use('/api/students/:studentId/resumes', resumeVersionRoutes);
 
 app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok' });

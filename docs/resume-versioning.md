@@ -2,39 +2,36 @@
 
 ## Overview
 
-Resume Versioning allows students to maintain multiple versions of their resume
-instead of overwriting an existing resume.
+Students can keep multiple named resume versions instead of overwriting one file.
+Useful when tailoring resumes for different placement opportunities.
 
-This is useful when students tailor their resume for different placement
-opportunities.
+**Status:** MVP service is **in-memory** (resets on server restart). Persisted Mongo storage can follow later.
 
-## Goals
+## API (authenticated)
 
-- Keep previous resume versions available.
-- Give each version a meaningful name.
-- Record when a version was created.
-- Allow users to identify the version used for a particular opportunity.
-- Prevent accidental loss of an older resume version.
+Base path: `/api/students/:studentId/resumes`
 
-## Proposed Version Model
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/` | List versions for the student |
+| `POST` | `/` | Create version `{ name, fileUrl }` |
+| `GET` | `/:versionId` | Get one version |
+| `POST` | `/:versionId/activate` | Mark version active |
+| `DELETE` | `/:versionId` | Delete inactive version |
 
-Each resume version should contain:
+Access: the student themselves or an admin (`JWT`).
 
-- `id` — unique version identifier
-- `name` — user-defined version name
-- `version` — sequential version number
-- `fileUrl` — stored resume location
-- `createdAt` — creation timestamp
-- `isActive` — whether this is the currently selected version
+## Version model
 
-Example:
+- `id` — unique version id (`{studentId}-{n}`)
+- `name` — user-defined label
+- `version` — sequential number
+- `fileUrl` — stored resume location / URL
+- `createdAt` — ISO timestamp
+- `isActive` — currently selected version
 
-```json
-{
-  "id": "resume-001",
-  "name": "Java Developer Resume",
-  "version": 2,
-  "fileUrl": "/resumes/java-developer-v2.pdf",
-  "createdAt": "2026-09-10T10:00:00Z",
-  "isActive": true
-}
+## Code
+
+- Service: `backend/src/services/resumeVersionService.ts`
+- Routes: `backend/src/routes/resumeVersionRoutes.ts`
+- Tests: `backend/tests/resumeVersion.test.ts` (included in `npm test`)
