@@ -35,6 +35,25 @@ Get a specific student profile (self or admin).
 ### `PUT /api/students/:id`
 Update a student profile (self or admin).
 
+## Resume versions
+
+Base: `/api/students/:studentId/resumes` (self or admin). **In-memory MVP** (not persisted).
+
+### `GET /api/students/:studentId/resumes`
+List resume versions for the student.
+
+### `POST /api/students/:studentId/resumes`
+Create a version. Body: `{ "name": string, "fileUrl": string }`.
+
+### `GET /api/students/:studentId/resumes/:versionId`
+Get one version.
+
+### `POST /api/students/:studentId/resumes/:versionId/activate`
+Mark this version active (others become inactive).
+
+### `DELETE /api/students/:studentId/resumes/:versionId`
+Delete an inactive version (active cannot be deleted).
+
 ## Opportunities
 
 ### `POST /api/opportunities`
