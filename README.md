@@ -64,6 +64,7 @@ Empower every student with equal access to career opportunities while enabling e
 This repository currently includes a fully functional MVP focusing on the **student placement journey**, built for the Bugbaar Internship Round 1 selection process.
 
 ### MVP Features Included:
+
 - **Student Profiles**: Manage skills, education, and preferences.
 - **Opportunity Discovery**: View and filter active placement opportunities.
 - **Explainable Matching Engine**: A deterministic algorithm that calculates a match score based on technical skills, academics, and preferences.
@@ -73,7 +74,9 @@ This repository currently includes a fully functional MVP focusing on the **stud
 - **Application Tracking**: Manage application status (Saved, Applied, Interview, etc.).
 - **AI Placement Assistant (Powered by Groq)**: A real-time, context-aware LLM chatbot that provides personalized interview prep, 30-day learning plans, and opportunity analysis based on the student's actual backend profile.
 
-The architecture is built with a modern MERN stack (React, Node.js, Express, MongoDB) and is fully Dockerized. See `docs/architecture.md` and `docs/ai-placement-assistant.md` for more details.
+The architecture is built with a modern MERN stack (React, Node.js, Express, MongoDB) and is fully Dockerized.
+
+For a focused write-up of the **current student product**, see [product-mvp.md](./product-mvp.md).
 
 ---
 
@@ -86,12 +89,7 @@ The architecture is built with a modern MERN stack (React, Node.js, Express, Mon
    ```
 
 2. **Configure Environment:**
-   Create a `.env` file in the `backend/` directory based on `backend/.env.example`.
-   To enable AI features, you must add your Groq API Key:
-   ```env
-   GROQ_API_KEY=your_key_here
-   GROQ_MODEL=llama-3.1-8b-instant
-   ```
+   Create `backend/.env` from `backend/.env.example`. Set `JWT_SECRET`, `CORS_ORIGIN`, `MONGO_URI` as needed, and `GROQ_API_KEY` / `GROQ_MODEL` for the AI assistant. For seeding, set the `SEED_*` variables in that same file (do not commit real values).
 
 3. **Start with Docker:**
    ```bash
@@ -102,6 +100,8 @@ The architecture is built with a modern MERN stack (React, Node.js, Express, Mon
    ```bash
    docker-compose exec backend npm run seed
    ```
+
+5. **Open the app:** [http://localhost:5173](http://localhost:5173) and sign in with an account you registered or seeded.
 
 ---
 
@@ -292,10 +292,9 @@ placement-os
 ├── frontend/
 ├── backend/
 ├── docs/
-├── infrastructure/
-├── scripts/
 ├── .github/
 ├── README.md
+├── product-mvp.md
 ├── CONTRIBUTING.md
 ├── LICENSE
 └── docker-compose.yml

@@ -38,7 +38,7 @@ npm run dev
 The frontend runs on `http://localhost:5173`.
 
 ### 5. Seed Data (Important!)
-To populate the database with a demo student and opportunities:
+To populate sample opportunities (and accounts if you configured `SEED_*` in `backend/.env`):
 ```bash
 cd backend
 npm run seed

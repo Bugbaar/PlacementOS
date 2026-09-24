@@ -8,41 +8,54 @@ All API responses follow a standard format:
 }
 ```
 
+Protected routes require `Authorization: Bearer <jwt>`.
+
+## Auth
+
+### `POST /api/auth/register`
+Register a new student account (public). Returns `{ token, student }`.
+
+### `POST /api/auth/login`
+Login with email/password (public). Returns `{ token, student }`.
+
+### `GET /api/auth/me`
+Return the authenticated student profile (auth required).
+
 ## Students
 
 ### `POST /api/students`
-Create a new student profile.
+Create a student account (admin only). Body includes `password`.
 
 ### `GET /api/students`
-Get all students (for demo purposes).
+List all students — exposes PII (admin only).
 
 ### `GET /api/students/:id`
-Get a specific student profile.
+Get a specific student profile (self or admin).
 
 ### `PUT /api/students/:id`
-Update a student profile.
+Update a student profile (self or admin).
 
 ## Opportunities
 
 ### `POST /api/opportunities`
-Create a new opportunity.
+Create a new opportunity (admin only).
 
 ### `GET /api/opportunities`
-Get all active opportunities.
+Get all active opportunities (public, no student PII).
 
 ### `GET /api/opportunities/:id`
-Get a specific opportunity.
+Get a specific opportunity (public).
 
 ### `PUT /api/opportunities/:id`
-Update an opportunity.
+Update an opportunity (admin only).
 
 ### `DELETE /api/opportunities/:id`
-Delete an opportunity.
+Delete an opportunity (admin only).
 
 ## Recommendations
 
 ### `GET /api/recommendations/:studentId`
-Get personalized opportunity recommendations for a student.
+Get personalized opportunity recommendations for a student (self or admin).
 **Query Parameters:**
 - `page`: Page number (default 1)
 - `limit`: Results per page (default 10)
@@ -51,21 +64,15 @@ Get personalized opportunity recommendations for a student.
 ## Applications
 
 ### `POST /api/applications`
-Apply to or save an opportunity.
+Apply to or save an opportunity (auth; own `studentId` only).
 
 ### `GET /api/applications/student/:studentId`
-Get all applications for a student.
+Get all applications for a student (self or admin).
 
 ### `PUT /api/applications/:id`
-Update application status (e.g., from 'saved' to 'applied').
+Update application status (own application or admin).
 
 ## AI Assistant
 
-### `GET /api/ai/advice/:studentId`
-Get personalized career advice based on the student's profile.
-
-### `GET /api/ai/explanation/:studentId/:opportunityId`
-Get an explainable breakdown of why a student matches a specific opportunity.
-
-### `GET /api/ai/skills/:studentId`
-Get skill recommendations to improve placement readiness.
+### `POST /api/assistant/chat`
+Chat with the Groq-powered placement assistant (auth; body `studentId` must match the caller unless admin).
