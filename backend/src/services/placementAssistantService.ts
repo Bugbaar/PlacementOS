@@ -1,6 +1,6 @@
 import { generateAIResponse } from './groqService';
-import Student, { IStudent } from '../models/Student';
-import Opportunity, { IOpportunity } from '../models/Opportunity';
+import Student from '../models/Student';
+import Opportunity from '../models/Opportunity';
 import Application from '../models/Application';
 import { calculateMatchScore } from './matchingService';
 
@@ -87,10 +87,5 @@ export const chatWithAssistant = async (studentId: string, userMessage: string, 
   // Prevent sending massive history
   const recentHistory = cleanHistory.slice(-10);
 
-  try {
-    const aiResponse = await generateAIResponse(systemPrompt, userMessage, recentHistory);
-    return aiResponse;
-  } catch (error) {
-    throw error; // Rethrow to be caught by controller (handles fallback vs real error)
-  }
+  return generateAIResponse(systemPrompt, userMessage, recentHistory);
 };

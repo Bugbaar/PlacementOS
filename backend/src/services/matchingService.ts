@@ -26,7 +26,7 @@ export const calculateMatchScore = (student: IStudent, opportunity: IOpportunity
   const { matchedSkills, missingSkills } = analyzeSkillGap(student.skills, opportunity.requiredSkills);
 
   // 1. Technical Skill Match (60%)
-  let technicalScore = 0;
+  let technicalScore: number;
   if (opportunity.requiredSkills.length > 0) {
     technicalScore = (matchedSkills.length / opportunity.requiredSkills.length) * WEIGHT_TECHNICAL;
   } else {
@@ -35,7 +35,7 @@ export const calculateMatchScore = (student: IStudent, opportunity: IOpportunity
 
   // 2. Academic Match (20%)
   // Simple normalization: If cgpa >= minimumCgpa, full points. Else, partial based on how close it is (though they would be ineligible).
-  let academicScore = 0;
+  let academicScore: number;
   if (student.cgpa >= opportunity.minimumCgpa) {
     // Reward higher CGPA slightly? For simplicity, if eligible academically, they get the base 20.
     // Let's add a small bonus for higher CGPA (e.g. 10 base, up to 10 for CGPA above minimum)
@@ -51,7 +51,7 @@ export const calculateMatchScore = (student: IStudent, opportunity: IOpportunity
   academicScore = Math.min(academicScore, WEIGHT_ACADEMIC); // Cap at 20
 
   // 3. Role Preference (10%)
-  let roleScore = 0;
+  let roleScore: number;
   if (student.preferredRoles && student.preferredRoles.length > 0) {
     const oppTitle = opportunity.title.toLowerCase();
     const hasRoleMatch = student.preferredRoles.some((role) => oppTitle.includes(role.toLowerCase()));
@@ -61,7 +61,7 @@ export const calculateMatchScore = (student: IStudent, opportunity: IOpportunity
   }
 
   // 4. Location Preference (10%)
-  let locationScore = 0;
+  let locationScore: number;
   if (student.preferredLocations && student.preferredLocations.length > 0) {
     const oppLocation = opportunity.location.toLowerCase();
     const isRemote = oppLocation.includes('remote');

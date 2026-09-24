@@ -1,14 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
+import { getEnv } from '../config/env';
+import { logger } from '../utils/logger';
 
-export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error('Error:', err);
+export const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunction) => {
+  const { isProd } = getEnv();
+
+  logger.error('Request failed', {
+    name: err?.name,
+    code: err?.code,
+    message: err?.message,
+    ...(isProd ? {} : { stack: err?.stack }),
+  });
 
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       success: false,
       error: {
         code: 'VALIDATION_ERROR',
-        message: err.message,
+        message: 'Invalid data provided',
       },
     });
   }
@@ -18,7 +27,17 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
       success: false,
       error: {
         code: 'INVALID_ID',
-        message: 'Invalid Object ID',
+        message: 'Invalid resource identifier',
+      },
+    });
+  }
+
+  if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+    return res.status(401).json({
+      success: false,
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Invalid or expired token',
       },
     });
   }

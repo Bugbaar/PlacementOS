@@ -4,7 +4,8 @@ import { ZodSchema, ZodError } from 'zod';
 export const validate = (schema: ZodSchema) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await schema.parseAsync(req.body);
+      // Assign parsed/transformed body (e.g. lowercased email)
+      req.body = await schema.parseAsync(req.body);
       next();
     } catch (error) {
       if (error instanceof ZodError) {
