@@ -1,8 +1,12 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export type StudentRole = 'student' | 'admin';
+
 export interface IStudent extends Document {
   name: string;
   email: string;
+  passwordHash: string;
+  role: StudentRole;
   phone?: string;
   branch: string;
   college: string;
@@ -25,6 +29,8 @@ const StudentSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    passwordHash: { type: String, required: true, select: false },
+    role: { type: String, enum: ['student', 'admin'], default: 'student' },
     phone: { type: String },
     branch: { type: String, required: true },
     college: { type: String, required: true },

@@ -3,6 +3,8 @@ import { z } from 'zod';
 export const createStudentSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  role: z.enum(['student', 'admin']).optional(),
   phone: z.string().optional(),
   branch: z.string().min(1, 'Branch is required'),
   college: z.string().min(1, 'College is required'),
@@ -19,4 +21,6 @@ export const createStudentSchema = z.object({
   portfolioUrl: z.string().url().optional().or(z.literal('')),
 });
 
-export const updateStudentSchema = createStudentSchema.partial();
+export const updateStudentSchema = createStudentSchema
+  .omit({ password: true, role: true })
+  .partial();
