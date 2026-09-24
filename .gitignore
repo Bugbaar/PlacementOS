@@ -1,6 +1,10 @@
+# Python (tools/eligibility-analytics)
 __pycache__/
 .pytest_cache/
 .venv/
+venv/
+*.pyc
+
 # Dependencies
 node_modules/
 
