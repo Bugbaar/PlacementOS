@@ -1,6 +1,6 @@
 # PlacementOS — Student Intelligence MVP
 
-This document describes the **current product** shipped in this repository: a student-facing placement intelligence MVP. It is separate from the long-term platform vision in `README.md`.
+This document describes the **current product** shipped in this repository: a student-facing placement intelligence MVP, plus the Python eligibility/analytics tool. It is separate from the long-term platform vision in `README.md`.
 
 ## What this MVP is
 
@@ -89,6 +89,43 @@ Student opens the assistant with suggested prompts tied to their live profile.
 Example conversation where the assistant ranks opportunities and calls out skill gaps.
 <img width="1907" height="957" alt="Screenshot 2026-09-24 192417" src="https://github.com/user-attachments/assets/33085228-7b0d-487f-b89b-ae24a647070e" />
 
+## Eligibility & placement analytics tool (Python)
+
+Alongside the MERN student app, the repo ships a **CSV-driven eligibility + analytics sidecar** under `tools/eligibility-analytics/`.
+
+It is separate from the live Mongo eligibility in the Node backend, and is useful for transparent demos, tests, and later Placement Cell analytics work.
+
+### What it does
+
+| Area | Behavior |
+|------|----------|
+| **Eligibility** | Checks CGPA, branch, graduation year, and required skills per student × drive |
+| **Reasons** | Explains failures (e.g. CGPA too low, wrong branch, missing skills) |
+| **Safety** | Rejects invalid / non-finite CGPA values (e.g. `NaN`) instead of treating them as eligible |
+| **Analytics** | Overall eligibility rate, top missing skills (case-normalized), branch-wise rates |
+
+### How to run
+
+```bash
+cd tools/eligibility-analytics
+python -m pip install -r requirements.txt
+python main.py
+python -m pytest -v
+```
+
+### Layout
+
+```text
+tools/eligibility-analytics/
+├── data/                  # sample students.csv + placement_drives.csv
+├── src/                   # eligibility_engine.py, analytics_engine.py
+├── tests/
+├── main.py
+└── requirements.txt
+```
+
+More detail: [tools/eligibility-analytics/README.md](./tools/eligibility-analytics/README.md).
+
 ## How this fits the wider PlacementOS vision
 
-`README.md` describes the full multi-sided operating system (students, placement cells, recruiters, analytics, communications). **This file is only the student intelligence slice that exists in code today.**
+`README.md` describes the full multi-sided operating system (students, placement cells, recruiters, analytics, communications). **This file is what exists in code today** — the student intelligence MVP plus the Python eligibility analytics tool.

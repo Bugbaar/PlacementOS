@@ -59,24 +59,11 @@ Empower every student with equal access to career opportunities while enabling e
 
 ---
 
-# 🏆 Current MVP Implementation (Student Intelligence)
+# 📦 What is in this repo today
 
-This repository currently includes a fully functional MVP focusing on the **student placement journey**, built for the Bugbaar Internship Round 1 selection process.
+A student placement intelligence MVP (MERN) plus a Python eligibility/analytics tool under `tools/`.
 
-### MVP Features Included:
-
-- **Student Profiles**: Manage skills, education, and preferences.
-- **Opportunity Discovery**: View and filter active placement opportunities.
-- **Explainable Matching Engine**: A deterministic algorithm that calculates a match score based on technical skills, academics, and preferences.
-- **Eligibility Engine**: Hard-constraint checking (CGPA, Branch, Year).
-- **Skill-Gap Analysis**: Highlights missing skills for specific roles.
-- **Placement Readiness**: A rule-based readiness score and suggestions.
-- **Application Tracking**: Manage application status (Saved, Applied, Interview, etc.).
-- **AI Placement Assistant (Powered by Groq)**: A real-time, context-aware LLM chatbot that provides personalized interview prep, 30-day learning plans, and opportunity analysis based on the student's actual backend profile.
-
-The architecture is built with a modern MERN stack (React, Node.js, Express, MongoDB) and is fully Dockerized.
-
-For a focused write-up of the **current student product**, see [product-mvp.md](./product-mvp.md).
+**Product details, screenshots, and shipped features live in [product-mvp.md](./product-mvp.md)** — not in this vision README.
 
 ---
 
@@ -103,9 +90,17 @@ For a focused write-up of the **current student product**, see [product-mvp.md](
 
 5. **Open the app:** [http://localhost:5173](http://localhost:5173) and sign in with an account you registered or seeded.
 
+6. **Optional — Python eligibility analytics tool:**
+   ```bash
+   cd tools/eligibility-analytics
+   python -m pip install -r requirements.txt
+   python main.py
+   python -m pytest -v
+   ```
+
 ---
 
-# 🧩 Platform Modules
+# 🧩 Platform Modules (roadmap)
 
 ## 🎓 Student Portal
 
@@ -292,9 +287,11 @@ placement-os
 ├── frontend/
 ├── backend/
 ├── docs/
+├── tools/
+│   └── eligibility-analytics/   # Python CSV eligibility + analytics sidecar
 ├── .github/
-├── README.md
-├── product-mvp.md
+├── README.md                    # Vision + setup (this file)
+├── product-mvp.md               # What is shipped today
 ├── CONTRIBUTING.md
 ├── LICENSE
 └── docker-compose.yml
@@ -425,67 +422,3 @@ We'd love to build with you.
 ## Built by the **BugBaar Global** Community.
 
 ### **Empowering Students. Modernizing Placements. Creating Opportunities.**
-
----
-
-# 🔧 Eligibility & Placement Analytics Contribution
-
-This contribution implements an initial Python-based eligibility and placement analytics engine for PlacementOS.
-
-The implementation focuses on two important areas already identified in the PlacementOS product vision:
-
-- 🎯 Placement eligibility verification
-- 📊 Placement reports and analytics
-
-The goal of this contribution is to provide a transparent and testable approach for evaluating student eligibility against placement drive requirements.
-
-## ✨ Features Implemented
-
-The eligibility engine evaluates students against placement drive requirements based on:
-
-- Minimum CGPA
-- Eligible branch
-- Graduation year
-- Required skills
-
-Instead of returning only an eligible or not eligible status, the system also provides clear reasons when a student does not meet the requirements.
-
-Example reasons may include:
-
-- CGPA is below the required minimum
-- Student branch is not eligible
-- Graduation year does not match
-- Required skills are missing
-
-## 📊 Analytics Implemented
-
-The analytics module processes eligibility results and provides:
-
-- Total number of evaluations
-- Total eligible evaluations
-- Overall eligibility rate
-- Most commonly missing skills
-- Branch-wise eligibility analytics
-
-These insights can later be integrated into the Placement Cell Dashboard and Analytics Dashboard proposed in PlacementOS.
-
-## 🏗 Contribution Structure
-
-```text
-PlacementOS/
-│
-├── data/
-│   ├── students.csv
-│   └── placement_drives.csv
-│
-├── src/
-│   ├── __init__.py
-│   ├── eligibility_engine.py
-│   └── analytics_engine.py
-│
-├── tests/
-│   └── test_eligibility.py
-│
-├── main.py
-├── requirements.txt
-└── README.md
