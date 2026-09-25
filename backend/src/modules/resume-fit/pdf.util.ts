@@ -1,4 +1,11 @@
 import multer from 'multer';
+import { createRequire } from 'node:module';
+
+const nodeRequire = createRequire(__filename);
+// Load implementation directly to avoid pdf-parse root debug side-effect.
+const pdfParse = nodeRequire('pdf-parse/lib/pdf-parse.js') as (
+  buf: Buffer
+) => Promise<{ text: string }>;
 
 /**
  * 5MB limit, PDF mimetype only. Same constraint Calibrate uses; resumes
@@ -18,10 +25,6 @@ export const resumeUpload = multer({
 });
 
 export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
-  // Lazy import: pdf-parse has a debug-mode side effect on import in some
-  // versions when run outside its own package directory; importing lazily
-  // keeps that contained to the one place it's actually used.
-  const pdfParse = (await import('pdf-parse')).default;
   const result = await pdfParse(buffer);
   return result.text;
 }

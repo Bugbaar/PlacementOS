@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { authenticate } from '../../middleware/auth';
 import { resumeUpload, extractTextFromPdf } from './pdf.util';
 import { ResumeFitRequestSchema } from './schema';
 import { runResumeFitAnalysis } from './resumeFit.service';
@@ -10,9 +11,11 @@ export const resumeFitRouter = Router();
  * multipart/form-data:
  *   - resume: PDF file (required, max 5MB)
  *   - jobDescription: string (required, min 20 chars)
+ * Requires JWT (same as assistant / other student features).
  */
 resumeFitRouter.post(
   '/',
+  authenticate,
   resumeUpload.single('resume'),
   async (req: Request, res: Response) => {
     try {

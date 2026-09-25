@@ -95,3 +95,14 @@ Update application status (own application or admin).
 
 ### `POST /api/assistant/chat`
 Chat with the Groq-powered placement assistant (auth; body `studentId` must match the caller unless admin).
+
+## Resume–JD Fit
+
+### `POST /api/resume-fit`
+Analyze resume vs job description (multipart, **auth required**). Fields:
+- `resume` — PDF file (required, max 5MB)
+- `jobDescription` — string (required, min 20 chars)
+
+Returns match percentage, matched/missing skills, and top relevant bullets.
+
+LLM extraction (optional): first available of `GROQ_API_KEY` → `OPENAI_API_KEY` → `ANTHROPIC_API_KEY` → `GEMINI_API_KEY`, or force with `RESUME_FIT_PROVIDER` (`groq` | `openai` | `anthropic` | `gemini` | `heuristic`). Models via `GROQ_MODEL` / `OPENAI_MODEL` / `ANTHROPIC_MODEL` / `GEMINI_MODEL`. Offline heuristic if no key. Bullet embeddings use Gemini when `GEMINI_API_KEY` is set, else hashing. Persistence only when Mongo is connected.
