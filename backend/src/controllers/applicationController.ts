@@ -26,7 +26,7 @@ export const createApplication = async (req: Request, res: Response, next: NextF
     const opportunity = await Opportunity.findById(opportunityId);
     if (!opportunity) return sendError(res, 'NOT_FOUND', 'Opportunity not found', 404);
 
-    let initialStatus = status || 'applied';
+    const initialStatus = status || 'applied';
     if (req.user?.role !== 'admin') {
       if (!STUDENT_WRITABLE_STATUSES.has(initialStatus)) {
         return sendError(
