@@ -14,6 +14,8 @@ export interface IOpportunity extends Document {
   salaryRange?: string;
   applicationDeadline: Date;
   status: 'active' | 'closed' | 'draft';
+  /** Recruiter (or admin) who posted this opportunity; optional for legacy seed data. */
+  postedBy?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,11 +35,14 @@ const OpportunitySchema: Schema = new Schema(
     salaryRange: { type: String },
     applicationDeadline: { type: Date, required: true },
     status: { type: String, enum: ['active', 'closed', 'draft'], default: 'active' },
+    postedBy: { type: Schema.Types.ObjectId, ref: 'Student', index: true },
   },
   {
     timestamps: true,
   }
 );
+
+OpportunitySchema.index({ postedBy: 1, createdAt: -1 });
 
 // Normalize requiredSkills on save
 OpportunitySchema.pre<IOpportunity>('save', function () {

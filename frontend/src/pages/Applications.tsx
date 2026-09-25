@@ -70,19 +70,21 @@ export default function Applications() {
                   <Badge variant={statusColors[app.status] || 'default'} className="uppercase px-3 py-1">
                     {app.status}
                   </Badge>
-                  <select 
-                    value={app.status}
-                    onChange={(e) => handleStatusChange(app._id, e.target.value)}
-                    className="text-xs border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 py-1 pl-2 pr-6"
-                  >
-                    <option value="saved">Saved</option>
-                    <option value="applied">Applied</option>
-                    <option value="shortlisted">Shortlisted</option>
-                    <option value="interview">Interview</option>
-                    <option value="offered">Offered</option>
-                    <option value="accepted">Accepted</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
+                  {app.status === 'saved' || app.status === 'applied' ? (
+                    <select
+                      value={app.status}
+                      onChange={(e) => handleStatusChange(app._id, e.target.value)}
+                      className="text-xs border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 py-1 pl-2 pr-6"
+                    >
+                      <option value="saved">Saved</option>
+                      <option value="applied">Applied</option>
+                    </select>
+                  ) : (
+                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                      <Edit2 className="w-3 h-3" />
+                      Updated by recruiter
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
