@@ -12,6 +12,7 @@ import assistantRoutes from './routes/assistantRoutes';
 import resumeVersionRoutes from './routes/resumeVersionRoutes';
 import { resumeFitRouter } from './modules/resume-fit/resumeFit.controller';
 import { shortlistRouter } from './modules/shortlist/shortlist.controller';
+import recruiterRoutes from './routes/recruiterRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 export function createApp(): Application {
@@ -62,6 +63,7 @@ export function createApp(): Application {
   app.use('/api/students/:studentId/resumes', resumeVersionRoutes);
   app.use('/api/resume-fit', resumeFitRouter);
   app.use('/api/shortlist', shortlistRouter);
+  app.use('/api/recruiter', recruiterRoutes);
 
   app.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok' });

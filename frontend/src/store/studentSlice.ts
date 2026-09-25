@@ -5,7 +5,7 @@ export interface Student {
   _id: string;
   name: string;
   email: string;
-  role?: 'student' | 'admin';
+  role?: 'student' | 'admin' | 'recruiter';
   phone?: string;
   branch: string;
   college: string;

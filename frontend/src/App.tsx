@@ -10,9 +10,16 @@ import Applications from './pages/Applications';
 import AIAssistant from './pages/AIAssistant';
 import ResumeFit from './pages/ResumeFit';
 import Shortlist from './pages/Shortlist';
+import RecruiterPortal from './pages/RecruiterPortal';
 import Login from './pages/Login';
 import { AppDispatch, RootState } from './store';
 import { fetchCurrentUser } from './store/studentSlice';
+
+function homeForRole(role?: string) {
+  if (role === 'admin') return '/shortlist';
+  if (role === 'recruiter') return '/recruiter';
+  return '/dashboard';
+}
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token, currentStudent, loading } = useSelector((state: RootState) => state.student);
@@ -36,6 +43,22 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function RoleHomeRedirect() {
+  const { token, currentStudent, loading } = useSelector((state: RootState) => state.student);
+  if (!token) return <Navigate to="/login" replace />;
+  if (!currentStudent) {
+    if (loading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center text-slate-600">
+          Loading session…
+        </div>
+      );
+    }
+    return <Navigate to="/login" replace />;
+  }
+  return <Navigate to={homeForRole(currentStudent.role)} replace />;
+}
+
 function App() {
   const dispatch = useDispatch<AppDispatch>();
   const { token, currentStudent } = useSelector((state: RootState) => state.student);
@@ -50,7 +73,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<RoleHomeRedirect />} />
         <Route
           element={
             <ProtectedRoute>
@@ -66,6 +89,7 @@ function App() {
           <Route path="/assistant" element={<AIAssistant />} />
           <Route path="/resume-fit" element={<ResumeFit />} />
           <Route path="/shortlist" element={<Shortlist />} />
+          <Route path="/recruiter" element={<RecruiterPortal />} />
         </Route>
       </Routes>
     </Router>

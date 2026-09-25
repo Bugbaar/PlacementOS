@@ -12,12 +12,13 @@ export default function Login() {
   const [formError, setFormError] = useState<string | null>(null);
 
   if (token && currentStudent) {
-    return (
-      <Navigate
-        to={currentStudent.role === 'admin' ? '/shortlist' : '/dashboard'}
-        replace
-      />
-    );
+    const dest =
+      currentStudent.role === 'admin'
+        ? '/shortlist'
+        : currentStudent.role === 'recruiter'
+          ? '/recruiter'
+          : '/dashboard';
+    return <Navigate to={dest} replace />;
   }
 
   const onSubmit = async (event: FormEvent) => {
@@ -38,7 +39,7 @@ export default function Login() {
             PlacementOS
           </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Sign in as a student or placement cell admin
+            Sign in as a student, placement cell admin, or recruiter
           </p>
         </div>
 

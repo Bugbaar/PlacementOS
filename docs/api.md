@@ -89,7 +89,10 @@ Apply to or save an opportunity (auth; own `studentId` only).
 Get all applications for a student (self or admin).
 
 ### `PUT /api/applications/:id`
-Update application status (own application or admin).
+Update application notes/status.
+- **Students:** may only set `saved` or `applied`, and only while the app is still in that pre-pipeline stage. Once a recruiter moves it to shortlisted/interview/etc., students cannot change status.
+- **Admins:** may set any status.
+- **Recruiters:** use `PATCH /api/recruiter/applications/:id/status` for owned postings.
 
 ## AI Assistant
 
@@ -121,3 +124,22 @@ Body: `{ batchId, criteria }`. Runs eligibility engine; returns metrics, logs, r
 ### `GET /api/shortlist/runs/:id/export.csv?mode=shortlisted|audit`
 ### `GET /api/shortlist/runs/:id/export.pdf`
 ### `GET /api/shortlist/notifications?runId=`
+
+## Recruiter portal
+
+Auth: JWT + **recruiter** role. Postings are stored as `Opportunity` documents with `postedBy` set to the recruiter.
+
+### `GET /api/recruiter/opportunities`
+List opportunities posted by the authenticated recruiter (includes `applicantCount`).
+
+### `POST /api/recruiter/opportunities`
+Create a new opportunity owned by the recruiter.
+
+### `PATCH /api/recruiter/opportunities/:id`
+Update or close an owned opportunity (e.g. `{ "status": "closed" }`).
+
+### `GET /api/recruiter/opportunities/:id/applications`
+List applicants for an owned opportunity (student name/email/CGPA/branch).
+
+### `PATCH /api/recruiter/applications/:id/status`
+Move an applicant through the pipeline: `applied` | `shortlisted` | `interview` | `rejected` | `offered` | `accepted`.

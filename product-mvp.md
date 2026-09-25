@@ -2,12 +2,13 @@
 
 This document describes the **current product** shipped in this repository. It is separate from the long-term platform vision in `README.md`.
 
-Same login URL serves two personas, distinguished by account **`role`**:
+Same login URL serves three personas, distinguished by account **`role`**:
 
 | Persona | Role | Shell look | Primary home |
 |--------|------|------------|--------------|
 | **Student** | `student` | Light blue **PlacementOS** sidebar | `/dashboard` |
 | **Placement Cell (Admin)** | `admin` | Dark **Placement Cell / Admin console** sidebar | `/shortlist` |
+| **Recruiter** | `recruiter` | Dark **Recruiter / Campus hiring** sidebar (amber accent) | `/recruiter` |
 
 Stack: React + TypeScript + Tailwind + Redux Toolkit; Node.js + Express + MongoDB + JWT; optional Groq (assistant) and optional multi-LLM for Resume Fit.
 
@@ -19,9 +20,10 @@ PlacementOS helps campuses run placements with:
 
 1. A **student intelligence** portal (readiness, match scores, applications, AI coaching, resume–JD fit)
 2. A **placement cell** console (CSV shortlisting engine with explainable rules and exports)
-3. A **Python eligibility/analytics sidecar** for offline CSV demos (`tools/eligibility-analytics/`)
+3. A **recruiter** portal (post campus roles, review applicants, update pipeline status)
+4. A **Python eligibility/analytics sidecar** for offline CSV demos (`tools/eligibility-analytics/`)
 
-College-wide analytics UIs, recruiter portals, resume builders, and WhatsApp/email hubs remain roadmap-only.
+College-wide analytics UIs, resume builders, and WhatsApp/email hubs remain roadmap-only.
 
 ---
 
@@ -31,15 +33,17 @@ College-wide analytics UIs, recruiter portals, resume builders, and WhatsApp/ema
 |--------|----------------|
 | **Student** | Profile, recommendations, opportunity eligibility/match, applications, AI assistant, Resume Fit |
 | **Placement Cell Admin** | Distinct admin shell, Cell Overview, Shortlist Engine (CSV + criteria + exports), opportunities browse, admin profile |
+| **Recruiter** | Distinct recruiter shell, post/close opportunities, applicant pipeline (shortlist → interview → offer) |
 
 ---
 
 ## How roles work
 
-- Seed accounts live in `backend/.env` (`SEED_STUDENT_*`, `SEED_ADMIN_*`).
-- JWT carries `role`. APIs use `authenticate` / `requireAdmin` where needed.
+- Seed accounts live in `backend/.env` (`SEED_STUDENT_*`, `SEED_ADMIN_*`, `SEED_RECRUITER_*`).
+- JWT carries `role`. APIs use `authenticate` / `requireAdmin` / `requireRecruiter` where needed.
 - **Shortlist Engine** (`/api/shortlist/*`) is **admin-only**.
-- UI: student nav vs placement-cell nav; admin login lands on Shortlist Engine.
+- **Recruiter APIs** (`/api/recruiter/*`) are **recruiter-only**; postings reuse the shared `Opportunity` model via `postedBy`.
+- UI: student vs placement-cell vs recruiter nav; login lands on the persona home route.
 
 ---
 
@@ -63,6 +67,12 @@ College-wide analytics UIs, recruiter portals, resume builders, and WhatsApp/ema
 - Cell Overview shortcuts
 - Shortlist Engine: upload CSV, set drive rules, run engine, view logs/table, export CSV/PDF
 - Opportunities list (campus drives students also see)
+
+### Recruiter
+- Recruiter console branding (dark sidebar, amber accent)
+- Post campus roles (stored as opportunities with `postedBy`)
+- Close postings
+- Review applicants and update pipeline status
 
 ---
 
@@ -164,18 +174,80 @@ Browse campus opportunities from the placement-cell nav (same opportunity data s
 ### B6. Admin profile
 **Admin** nav item opens the signed-in officer’s account/profile (not a full student directory yet).
 
+---
+
+# Scenario C — Recruiter portal
+
+Use a **recruiter** account (seed `SEED_RECRUITER_EMAIL` / `SEED_RECRUITER_PASSWORD`). After login you see the dark **Recruiter · Campus hiring** shell (amber accent) and land on **Hiring Portal** (`/recruiter`).
+
+This persona is the **company / campus recruiter** — not the college placement cell. Recruiters post jobs and move applicants through a hiring pipeline. They do **not** run the CSV Shortlist Engine (that is admin-only).
+
+### C1. Sign in as recruiter
+Same login URL as students and admins. Use recruiter credentials from seed env. Login copy mentions student, placement cell admin, or recruiter.
+
+### C2. Recruiter shell
+Dark left sidebar branded **Recruiter** with subtitle **Campus hiring**:
+
+| Nav | Route | Purpose |
+|-----|-------|---------|
+| **Hiring Portal** | `/recruiter` | Post roles, manage postings, open applicants |
+| **Account** | `/profile` | Signed-in recruiter account |
+
+Footer shows recruiter name (e.g. Sample Recruiter), label **Campus recruiter**, and **Sign out**.
+
+### C3. Hiring portal — post a new role
+Main page title: **Hiring portal** — “Post campus roles and move applicants through your pipeline.”
+
+**Post a new role** form fields:
+
+| Field | Notes |
+|-------|--------|
+| Job title | Required |
+| Company | Required |
+| Location | Optional (defaults if empty) |
+| Employment type | Full-time / Internship / Part-time / Contract |
+| CTC / stipend | Optional |
+| Deadline | Required (date) |
+| Role description | Required |
+
+Submit **Post role**. The opportunity is stored with `postedBy` = this recruiter and appears on the shared opportunities board students browse.
+
+### C4. Your postings table
+Below the form, a table of roles **you** posted:
+
+| Column | What it shows |
+|--------|----------------|
+| Title | Role name |
+| Company | Company name |
+| Deadline | Application deadline |
+| Applicants | Count of real applies (bookmarks/`saved` are excluded); click to open the pipeline |
+| Status | `active` (green) or `closed` (grey) |
+| Action | **Close** on active rows |
+
+### C5. Review applicants (pipeline)
+Click an applicant count (e.g. **1 applicant**). Modal lists student name, email, branch, CGPA. Change status:
+
+`applied` → `shortlisted` → `interview` → `offered` / `rejected` (also `accepted`).
+
+Once a recruiter moves an application past applied, the student can no longer overwrite that pipeline status from their Application Tracker.
+
+### C6. Close a posting
+Use **Close** on an active role. Status becomes **closed**; the posting remains in your list for history.
+
+### C7. Account
+**Account** nav opens the recruiter’s own profile/account page (same profile route as other personas; not a student directory).
 
 ---
 
-## Student vs Placement Cell — at a glance
+## Student vs Placement Cell vs Recruiter — at a glance
 
-| Area | Student | Placement Cell Admin |
-|------|---------|----------------------|
-| Shell | Light PlacementOS | Dark Placement Cell console |
-| Home | Readiness + recommendations | Cell Overview / Shortlist |
-| Shortlist CSV engine | No | Yes |
-| Resume Fit / AI chat | Yes | Not in admin nav (student tools) |
-| Opportunity apply flow | Yes | Browse only in this MVP |
+| Area | Student | Placement Cell Admin | Recruiter |
+|------|---------|----------------------|-----------|
+| Shell | Light PlacementOS | Dark Placement Cell console | Dark Recruiter console (amber) |
+| Home | Readiness + recommendations | Cell Overview / Shortlist | Hiring portal |
+| Shortlist CSV engine | No | Yes | No |
+| Post jobs / pipeline | Apply only | Browse | Yes |
+| Resume Fit / AI chat | Yes | Not in admin nav | Not in recruiter nav |
 
 ---
 
@@ -241,10 +313,17 @@ See [docs/resume-versioning.md](./docs/resume-versioning.md).
 | Opportunities | `/opportunities` | Same as student browse |
 | Admin profile | `/profile` | Own account |
 
+### Recruiter
+
+| Feature | UI | API notes |
+|---------|----|-----------|
+| Hiring portal | `/recruiter` | `/api/recruiter/*` (JWT + recruiter) |
+| Account | `/profile` | Own account |
+
 See [docs/api.md](./docs/api.md) and [docs/resume-fit-module.md](./docs/resume-fit-module.md).
 
 ---
 
 ## How this fits the wider PlacementOS vision
 
-`README.md` describes the full multi-sided OS (students, placement cells, recruiters, analytics, communications). **This file is what exists in code today**: dual-persona student + placement-cell MVP, Python eligibility tool, resume versioning API, and resume–JD fit.
+`README.md` describes the full multi-sided OS (students, placement cells, recruiters, analytics, communications). **This file is what exists in code today**: three-persona MVP (student + placement cell + recruiter), Python eligibility tool, resume versioning API, and resume–JD fit.

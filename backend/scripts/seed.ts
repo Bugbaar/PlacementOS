@@ -13,7 +13,7 @@ function requireSeedCredential(name: string): string {
   const value = process.env[name]?.trim();
   if (!value) {
     throw new Error(
-      `Missing ${name}. Set SEED_STUDENT_EMAIL, SEED_STUDENT_PASSWORD, SEED_ADMIN_EMAIL, and SEED_ADMIN_PASSWORD in backend/.env before seeding.`
+      `Missing ${name}. Set SEED_STUDENT_EMAIL, SEED_STUDENT_PASSWORD, SEED_ADMIN_EMAIL, SEED_ADMIN_PASSWORD, SEED_RECRUITER_EMAIL, and SEED_RECRUITER_PASSWORD in backend/.env before seeding.`
     );
   }
   return value;
@@ -30,6 +30,8 @@ const seedData = async () => {
     const studentPassword = requireSeedCredential('SEED_STUDENT_PASSWORD');
     const adminEmail = requireSeedCredential('SEED_ADMIN_EMAIL');
     const adminPassword = requireSeedCredential('SEED_ADMIN_PASSWORD');
+    const recruiterEmail = requireSeedCredential('SEED_RECRUITER_EMAIL');
+    const recruiterPassword = requireSeedCredential('SEED_RECRUITER_PASSWORD');
 
     await mongoose.connect(MONGO_URI);
     console.log('Connected to MongoDB');
@@ -41,6 +43,7 @@ const seedData = async () => {
 
     const studentPasswordHash = await bcrypt.hash(studentPassword, 10);
     const adminPasswordHash = await bcrypt.hash(adminPassword, 10);
+    const recruiterPasswordHash = await bcrypt.hash(recruiterPassword, 10);
 
     await Student.create({
       name: 'Sample Student',
@@ -77,6 +80,22 @@ const seedData = async () => {
     });
     console.log('Created seed admin account');
 
+    const recruiter = await Student.create({
+      name: 'Sample Recruiter',
+      email: recruiterEmail,
+      passwordHash: recruiterPasswordHash,
+      role: 'recruiter',
+      branch: 'Talent Acquisition',
+      college: 'TechCorp Campus Hiring',
+      cgpa: 10,
+      graduationYear: 2026,
+      skills: [],
+      preferredRoles: [],
+      preferredLocations: [],
+      bio: 'Campus recruiter account for posting jobs and reviewing applicants.',
+    });
+    console.log('Created seed recruiter account');
+
     // Create opportunities
     const futureDate = new Date();
     futureDate.setFullYear(futureDate.getFullYear() + 1);
@@ -97,6 +116,7 @@ const seedData = async () => {
         employmentType: 'Internship',
         salaryRange: '₹25,000/month',
         applicationDeadline: futureDate,
+        postedBy: recruiter._id,
       },
       {
         title: 'Full Stack Developer Intern',
@@ -110,6 +130,7 @@ const seedData = async () => {
         employmentType: 'Internship',
         salaryRange: '₹30,000/month',
         applicationDeadline: futureDate,
+        postedBy: recruiter._id,
       },
       {
         title: 'Backend Developer Intern',

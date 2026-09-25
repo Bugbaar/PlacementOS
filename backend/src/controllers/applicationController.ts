@@ -4,6 +4,9 @@ import Opportunity from '../models/Opportunity';
 import Student from '../models/Student';
 import { sendSuccess, sendError } from '../utils/response';
 
+/** Statuses a student may set on their own application (bookmark / apply). */
+const STUDENT_WRITABLE_STATUSES = new Set(['saved', 'applied']);
+
 function isOwnerOrAdmin(req: Request, studentId: string): boolean {
   if (!req.user) return false;
   return req.user.role === 'admin' || req.user.id === studentId;
@@ -23,10 +26,22 @@ export const createApplication = async (req: Request, res: Response, next: NextF
     const opportunity = await Opportunity.findById(opportunityId);
     if (!opportunity) return sendError(res, 'NOT_FOUND', 'Opportunity not found', 404);
 
+    let initialStatus = status || 'applied';
+    if (req.user?.role !== 'admin') {
+      if (!STUDENT_WRITABLE_STATUSES.has(initialStatus)) {
+        return sendError(
+          res,
+          'FORBIDDEN',
+          'Students can only create applications with status saved or applied',
+          403,
+        );
+      }
+    }
+
     const application = new Application({
       studentId,
       opportunityId,
-      status: status || 'applied',
+      status: initialStatus,
       notes,
     });
 
@@ -70,7 +85,33 @@ export const updateApplication = async (req: Request, res: Response, next: NextF
       return sendError(res, 'FORBIDDEN', 'You can only update your own applications', 403);
     }
 
-    if (req.body.status) application.status = req.body.status;
+    if (req.body.status !== undefined) {
+      const nextStatus = String(req.body.status);
+
+      if (req.user?.role === 'admin') {
+        application.status = nextStatus as typeof application.status;
+      } else {
+        // Students may only toggle saved ↔ applied, and only before recruiter pipeline starts
+        if (!STUDENT_WRITABLE_STATUSES.has(application.status)) {
+          return sendError(
+            res,
+            'FORBIDDEN',
+            'This application is in the recruiter pipeline and can no longer be changed by the student',
+            403,
+          );
+        }
+        if (!STUDENT_WRITABLE_STATUSES.has(nextStatus)) {
+          return sendError(
+            res,
+            'FORBIDDEN',
+            'Students can only set status to saved or applied',
+            403,
+          );
+        }
+        application.status = nextStatus as typeof application.status;
+      }
+    }
+
     if (req.body.notes !== undefined) application.notes = req.body.notes;
     application.updatedAt = new Date();
 

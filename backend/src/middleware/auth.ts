@@ -37,6 +37,16 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
   next();
 };
 
+export const requireRecruiter = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    return sendError(res, 'UNAUTHORIZED', 'Authentication required', 401);
+  }
+  if (req.user.role !== 'recruiter') {
+    return sendError(res, 'FORBIDDEN', 'Recruiter access required', 403);
+  }
+  next();
+};
+
 /** Allow access when the authenticated user owns the resource or is an admin. */
 export const requireSelfOrAdmin = (paramName = 'id') => {
   return (req: Request, res: Response, next: NextFunction) => {

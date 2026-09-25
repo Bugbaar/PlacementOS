@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/Card';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { Briefcase, Trophy, AlertCircle, ArrowRight, ExternalLink, Bot, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { buildPlacementInsights } from '../utils/placementInsights';
 import { calculateReadinessScore } from '../utils/readinessScore';
 
@@ -29,6 +29,11 @@ export default function Dashboard() {
       </div>
     );
   }
+
+  if (currentStudent.role === 'recruiter') {
+    return <Navigate to="/recruiter" replace />;
+  }
+
   const readinessScore = calculateReadinessScore(currentStudent);
   const isAdmin = currentStudent.role === 'admin';
 
