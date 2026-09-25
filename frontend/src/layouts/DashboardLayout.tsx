@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, User, Briefcase, FileText, Bot, Menu, X, LogOut } from 'lucide-react';
+import { LayoutDashboard, User, Briefcase, FileText, Bot, Menu, X, LogOut, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/studentSlice';
@@ -11,6 +11,7 @@ const navigation = [
   { name: 'My Profile', href: '/profile', icon: User },
   { name: 'Opportunities', href: '/opportunities', icon: Briefcase },
   { name: 'Applications', href: '/applications', icon: FileText },
+  { name: 'Resume Fit', href: '/resume-fit', icon: Sparkles },
   { name: 'AI Assistant', href: '/assistant', icon: Bot },
 ];
 

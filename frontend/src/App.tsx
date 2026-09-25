@@ -8,6 +8,7 @@ import Opportunities from './pages/Opportunities';
 import OpportunityDetails from './pages/OpportunityDetails';
 import Applications from './pages/Applications';
 import AIAssistant from './pages/AIAssistant';
+import ResumeFit from './pages/ResumeFit';
 import Login from './pages/Login';
 import { AppDispatch, RootState } from './store';
 import { fetchCurrentUser } from './store/studentSlice';
@@ -62,6 +63,7 @@ function App() {
           <Route path="/opportunities/:id" element={<OpportunityDetails />} />
           <Route path="/applications" element={<Applications />} />
           <Route path="/assistant" element={<AIAssistant />} />
+          <Route path="/resume-fit" element={<ResumeFit />} />
         </Route>
       </Routes>
     </Router>

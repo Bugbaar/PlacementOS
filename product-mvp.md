@@ -46,6 +46,9 @@ A rule-based readiness score summarizes how complete and competitive the profile
 ### AI Placement Assistant
 A chat experience grounded in the student's real profile, recommendations, and applications. Useful for prioritize-what-to-apply, skill-gap plans, interview prep, and explaining match scores. Requires a configured `GROQ_API_KEY` (model configurable via `GROQ_MODEL`).
 
+### Resume–JD Fit Scorer
+Students open **Resume Fit** from the sidebar, upload a PDF resume, paste a job description, and get match %, matched/missing skills, and top relevant bullets. Works offline with a heuristic; optional Groq / OpenAI / Anthropic / Gemini when API keys are set.
+
 ## Product walkthrough
 
 ### 1. Sign in
@@ -88,6 +91,10 @@ Student opens the assistant with suggested prompts tied to their live profile.
 ### 8. AI coaching reply
 Example conversation where the assistant ranks opportunities and calls out skill gaps.
 <img width="1907" height="957" alt="Screenshot 2026-09-24 192417" src="https://github.com/user-attachments/assets/33085228-7b0d-487f-b89b-ae24a647070e" />
+
+### 9. Resume Fit
+Student uses **Resume Fit** in the sidebar (with Dashboard readiness, insights, and role match %) to open the Resume–JD Fit Scorer — upload a PDF + paste a JD for skill match, gaps, and relevant bullets.
+
 
 ## Eligibility & placement analytics tool (Python)
 
@@ -140,6 +147,23 @@ Students can keep **multiple named resume versions** and mark one as active (use
 
 See [docs/resume-versioning.md](./docs/resume-versioning.md).
 
+## Resume–JD Fit Scorer (Resume Intelligence)
+
+Students open **Resume Fit** from the app sidebar and upload a **PDF resume** + paste a **job description** to get:
+
+- Skill match percentage (fuzzy matching + aliases)
+- Matched / missing skills
+- Most relevant resume bullets (Gemini embeddings when `GEMINI_API_KEY` is set; hashing fallback otherwise)
+- Optional LLM extraction: Groq (preferred) → OpenAI → Anthropic → Gemini, or offline heuristic
+
+| Item | Detail |
+|------|--------|
+| UI | `/resume-fit` (authenticated) — nav label **Resume Fit** |
+| API | `POST /api/resume-fit` (multipart: `resume` PDF + `jobDescription`) |
+| Optional env | `GROQ_API_KEY` / `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` (+ `*_MODEL`); force with `RESUME_FIT_PROVIDER` |
+
+See [docs/resume-fit-module.md](./docs/resume-fit-module.md).
+
 ## How this fits the wider PlacementOS vision
 
-`README.md` describes the full multi-sided operating system (students, placement cells, recruiters, analytics, communications). **This file is what exists in code today** — the student intelligence MVP, the Python eligibility analytics tool, and resume versioning APIs.
+`README.md` describes the full multi-sided operating system (students, placement cells, recruiters, analytics, communications). **This file is what exists in code today** — the student intelligence MVP, Python eligibility tool, resume versioning, and resume–JD fit scoring.
