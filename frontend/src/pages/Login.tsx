@@ -12,7 +12,12 @@ export default function Login() {
   const [formError, setFormError] = useState<string | null>(null);
 
   if (token && currentStudent) {
-    return <Navigate to="/dashboard" replace />;
+    return (
+      <Navigate
+        to={currentStudent.role === 'admin' ? '/shortlist' : '/dashboard'}
+        replace
+      />
+    );
   }
 
   const onSubmit = async (event: FormEvent) => {
@@ -32,7 +37,9 @@ export default function Login() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-700 to-blue-500 bg-clip-text text-transparent">
             PlacementOS
           </h1>
-          <p className="mt-2 text-sm text-slate-600">Sign in to your student account</p>
+          <p className="mt-2 text-sm text-slate-600">
+            Sign in as a student or placement cell admin
+          </p>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-4">

@@ -106,3 +106,18 @@ Analyze resume vs job description (multipart, **auth required**). Fields:
 Returns match percentage, matched/missing skills, and top relevant bullets.
 
 LLM extraction (optional): first available of `GROQ_API_KEY` → `OPENAI_API_KEY` → `ANTHROPIC_API_KEY` → `GEMINI_API_KEY`, or force with `RESUME_FIT_PROVIDER` (`groq` | `openai` | `anthropic` | `gemini` | `heuristic`). Models via `GROQ_MODEL` / `OPENAI_MODEL` / `ANTHROPIC_MODEL` / `GEMINI_MODEL`. Offline heuristic if no key. Bullet embeddings use Gemini when `GEMINI_API_KEY` is set, else hashing. Persistence only when Mongo is connected.
+
+## Placement Cell Shortlist (admin)
+
+Auth: JWT + **admin** role.
+
+### `POST /api/shortlist/upload`
+Multipart CSV (`file`). Returns `batchId`, count, preview, branches, skill universe.
+
+### `POST /api/shortlist/run`
+Body: `{ batchId, criteria }`. Runs eligibility engine; returns metrics, logs, results, mock notifications.
+
+### `GET /api/shortlist/runs/:id`
+### `GET /api/shortlist/runs/:id/export.csv?mode=shortlisted|audit`
+### `GET /api/shortlist/runs/:id/export.pdf`
+### `GET /api/shortlist/notifications?runId=`

@@ -11,6 +11,7 @@ import recommendationRoutes from './routes/recommendationRoutes';
 import assistantRoutes from './routes/assistantRoutes';
 import resumeVersionRoutes from './routes/resumeVersionRoutes';
 import { resumeFitRouter } from './modules/resume-fit/resumeFit.controller';
+import { shortlistRouter } from './modules/shortlist/shortlist.controller';
 import { errorHandler } from './middleware/errorHandler';
 
 export function createApp(): Application {
@@ -60,6 +61,7 @@ export function createApp(): Application {
   app.use('/api/assistant', assistantRoutes);
   app.use('/api/students/:studentId/resumes', resumeVersionRoutes);
   app.use('/api/resume-fit', resumeFitRouter);
+  app.use('/api/shortlist', shortlistRouter);
 
   app.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok' });
@@ -67,7 +69,7 @@ export function createApp(): Application {
 
   // Multer rejects (bad type / too large) before the route try/catch.
   app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
-    if (err?.message === 'Only PDF files are accepted' || err?.name === 'MulterError') {
+    if (err?.message === 'Only PDF files are accepted' || err?.message === 'Only CSV files are allowed' || err?.name === 'MulterError') {
       return res.status(400).json({ error: err.message });
     }
     return next(err);

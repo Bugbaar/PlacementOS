@@ -30,6 +30,58 @@ export default function Dashboard() {
     );
   }
   const readinessScore = calculateReadinessScore(currentStudent);
+  const isAdmin = currentStudent.role === 'admin';
+
+  if (isAdmin) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-teal-700">Admin</p>
+          <h1 className="text-2xl font-bold text-slate-900 mt-1">
+            Placement Cell overview
+          </h1>
+          <p className="text-slate-600 mt-1">
+            Run eligibility shortlists, review campus drives, and manage placement workflows.
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Link
+            to="/shortlist"
+            className="rounded-xl border border-teal-200 bg-teal-50 p-5 hover:border-teal-400 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-teal-700 text-white p-2">
+                <Briefcase className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-slate-900">Shortlist Engine</h2>
+                <p className="text-sm text-slate-600 mt-0.5">
+                  Upload CSV batches and apply CGPA / skills / branch rules.
+                </p>
+              </div>
+            </div>
+          </Link>
+          <Link
+            to="/opportunities"
+            className="rounded-xl border border-slate-200 bg-white p-5 hover:border-slate-400 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-slate-800 text-white p-2">
+                <ExternalLink className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-slate-900">Opportunities</h2>
+                <p className="text-sm text-slate-600 mt-0.5">
+                  Browse drives students see in the campus portal.
+                </p>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
