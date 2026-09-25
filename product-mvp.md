@@ -186,7 +186,11 @@ This persona is the **company / campus recruiter** — not the college placement
 Same login URL as students and admins. Use recruiter credentials from seed env. Login copy mentions student, placement cell admin, or recruiter.
 
 ### C2. Recruiter shell
-Dark left sidebar branded **Recruiter** with subtitle **Campus hiring**:
+Dark left sidebar branded **Recruiter** with subtitle ** hiring portal**:
+<img width="1830" height="971" alt="image" src="https://github.com/user-attachments/assets/0349b5ff-4631-43b2-afb5-5b5c2a54cde7" />
+
+
+
 
 | Nav | Route | Purpose |
 |-----|-------|---------|
@@ -197,6 +201,7 @@ Footer shows recruiter name (e.g. Sample Recruiter), label **Campus recruiter**,
 
 ### C3. Hiring portal — post a new role
 Main page title: **Hiring portal** — “Post campus roles and move applicants through your pipeline.”
+<img width="1716" height="958" alt="image" src="https://github.com/user-attachments/assets/4c8a0b58-ef0d-4e0d-9b50-70b0e88e7823" />
 
 **Post a new role** form fields:
 
@@ -214,6 +219,8 @@ Submit **Post role**. The opportunity is stored with `postedBy` = this recruiter
 
 ### C4. Your postings table
 Below the form, a table of roles **you** posted:
+<img width="1727" height="967" alt="image" src="https://github.com/user-attachments/assets/a02b5348-bb21-46a7-b58b-e518142bc22c" />
+
 
 | Column | What it shows |
 |--------|----------------|
