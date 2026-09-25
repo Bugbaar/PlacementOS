@@ -129,7 +129,10 @@ _Add screenshot: login (admin credentials / note)_
 ### B2. Cell Overview
 Admin home: short intro plus cards to **Shortlist Engine** and **Opportunities**.
 
-_Add screenshot: Cell Overview_
+### 9. Resume Fit
+Student uses **Resume Fit** in the sidebar (with Dashboard readiness, insights, and role match %) to open the Resume–JD Fit Scorer — upload a PDF + paste a JD for skill match, gaps, and relevant bullets.
+<img width="1572" height="950" alt="image" src="https://github.com/user-attachments/assets/91ffaa07-3d4c-4e2e-b790-0e1153662ae4" />
+
 
 ### B3. Shortlist Engine — criteria & upload
 Admin sets:
