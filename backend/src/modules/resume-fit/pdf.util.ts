@@ -1,9 +1,9 @@
 import multer from 'multer';
 import { createRequire } from 'node:module';
 
-const require = createRequire(__filename);
+const nodeRequire = createRequire(__filename);
 // Load implementation directly to avoid pdf-parse root debug side-effect.
-const pdfParse = require('pdf-parse/lib/pdf-parse.js') as (
+const pdfParse = nodeRequire('pdf-parse/lib/pdf-parse.js') as (
   buf: Buffer
 ) => Promise<{ text: string }>;
 
