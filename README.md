@@ -59,7 +59,48 @@ Empower every student with equal access to career opportunities while enabling e
 
 ---
 
-# 🧩 Platform Modules
+# 📦 What is in this repo today
+
+A student placement intelligence MVP (MERN) plus a Python eligibility/analytics tool under `tools/`.
+
+**Product details, screenshots, and shipped features live in [product-mvp.md](./product-mvp.md)** — not in this vision README.
+
+---
+
+## 🚀 Getting Started
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Bugbaar/PlacementOS.git
+   cd PlacementOS
+   ```
+
+2. **Configure Environment:**
+   Create `backend/.env` from `backend/.env.example`. Set `JWT_SECRET`, `CORS_ORIGIN`, `MONGO_URI` as needed, and `GROQ_API_KEY` / `GROQ_MODEL` for the AI assistant. For seeding, set the `SEED_*` variables in that same file (do not commit real values).
+
+3. **Start with Docker:**
+   ```bash
+   docker-compose up --build
+   ```
+
+4. **Seed the Database (Optional but recommended):**
+   ```bash
+   docker-compose exec backend npm run seed
+   ```
+
+5. **Open the app:** [http://localhost:5173](http://localhost:5173) and sign in with an account you registered or seeded.
+
+6. **Optional — Python eligibility analytics tool:**
+   ```bash
+   cd tools/eligibility-analytics
+   python -m pip install -r requirements.txt
+   python main.py
+   python -m pytest -v
+   ```
+
+---
+
+# 🧩 Platform Modules (roadmap)
 
 ## 🎓 Student Portal
 
@@ -246,10 +287,11 @@ placement-os
 ├── frontend/
 ├── backend/
 ├── docs/
-├── infrastructure/
-├── scripts/
+├── tools/
+│   └── eligibility-analytics/   # Python CSV eligibility + analytics sidecar
 ├── .github/
-├── README.md
+├── README.md                    # Vision + setup (this file)
+├── product-mvp.md               # What is shipped today
 ├── CONTRIBUTING.md
 ├── LICENSE
 └── docker-compose.yml

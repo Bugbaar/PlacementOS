@@ -1,0 +1,5 @@
+drive_id,company,role,min_cgpa,eligible_branches,graduation_year,required_skills
+D001,DataTech Solutions,Data Analyst,7.0,"CSE,ECE,IT",2027,"Python,SQL,Data Analysis"
+D002,AI Innovations,Machine Learning Intern,7.5,"CSE,IT",2027,"Python,Machine Learning,SQL"
+D003,Insight Analytics,Business Analyst,6.5,"CSE,ECE,IT",2027,"SQL,Data Analysis,Excel"
+D004,Cloud Systems,Software Engineer,7.0,"CSE,IT",2027,"Python,SQL"

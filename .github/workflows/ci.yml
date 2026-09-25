@@ -1,0 +1,46 @@
+name: PlacementOS CI
+
+on:
+  push:
+    branches: [ "main", "feat/*", "fix/*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    # Pin image so ubuntu-latest → 26 migration does not surprise us.
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Vite 8 / current toolchain need Node 20+. Drop 18.x (was failing CI).
+        node-version: [20.x, 22.x]
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v7
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
+
+    - name: Install Backend Dependencies
+      run: cd backend && npm ci || npm install
+
+    - name: Lint Backend
+      run: cd backend && npm run lint
+
+    - name: Test Backend
+      run: cd backend && npm run test
+
+    - name: Build Backend
+      run: cd backend && npm run build
+
+    - name: Install Frontend Dependencies
+      run: cd frontend && npm ci || npm install
+
+    - name: Build Frontend
+      run: cd frontend && npm run build
