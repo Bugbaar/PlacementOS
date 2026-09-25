@@ -112,8 +112,7 @@ Suggested prompts grounded in the live student profile; coaching replies for ran
 ### A8. Resume Fit
 Upload a PDF resume and paste a job description → match %, matched/missing skills, top relevant bullets.
 
-_Add screenshot: Resume Fit page (form)_  
-_Add screenshot: Resume Fit results (optional)_
+<img width="1572" height="950" alt="image" src="https://github.com/user-attachments/assets/91ffaa07-3d4c-4e2e-b790-0e1153662ae4" />
 
 ---
 
@@ -124,14 +123,13 @@ Use an **admin** account (e.g. seed `SEED_ADMIN_EMAIL`). After login you see the
 ### B1. Sign in as placement officer
 Same login URL; admin credentials. Copy can say student *or* placement cell admin.
 
-_Add screenshot: login (admin credentials / note)_
 
 ### B2. Cell Overview
 Admin home: short intro plus cards to **Shortlist Engine** and **Opportunities**.
+<img width="1700" height="957" alt="image" src="https://github.com/user-attachments/assets/f434c40d-22b4-4a7e-af7f-7489cb6350df" />
 
 ### 9. Resume Fit
 Student uses **Resume Fit** in the sidebar (with Dashboard readiness, insights, and role match %) to open the Resume–JD Fit Scorer — upload a PDF + paste a JD for skill match, gaps, and relevant bullets.
-<img width="1572" height="950" alt="image" src="https://github.com/user-attachments/assets/91ffaa07-3d4c-4e2e-b790-0e1153662ae4" />
 
 
 ### B3. Shortlist Engine — criteria & upload
@@ -145,7 +143,8 @@ Admin sets:
 
 Then runs **Run shortlisting engine**.
 
-_Add screenshot: Shortlist Engine form (before or with file chosen)_
+<img width="1702" height="968" alt="image" src="https://github.com/user-attachments/assets/faa5a9b9-41cb-4910-922c-423aaf4c7910" />
+
 
 ### B4. Shortlist Engine — results
 After a run, admin sees:
@@ -155,18 +154,16 @@ After a run, admin sees:
 - Pipeline logs (`MATCH` / `REJECT` with reasons)  
 - Table of shortlisted students (roll, name, branch, CGPA, status)
 
-_Add screenshot: metrics + exports + logs_  
-_Add screenshot: shortlisted students table_
+<img width="1656" height="967" alt="image" src="https://github.com/user-attachments/assets/b28f1704-d46d-4d42-93d9-1788e805280d" />
+
 
 ### B5. Opportunities (admin view)
 Browse campus opportunities from the placement-cell nav (same opportunity data students use).
 
-_Add screenshot: opportunities from admin shell_
 
 ### B6. Admin profile
 **Admin** nav item opens the signed-in officer’s account/profile (not a full student directory yet).
 
-_Add screenshot: admin profile (optional)_
 
 ---
 
